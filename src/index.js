@@ -1,6 +1,5 @@
 const dotenv = require('dotenv');
-const NODE_ENV = process.env.NODE_ENV || 'dev';
-dotenv.config({ path: NODE_ENV === 'prod' ? '.env' : `.env.${NODE_ENV}` });
+dotenv.config();
 
 const { Client, Collection } = require('discord.js');
 const { eventHandler, commandHandler } = require('./tools/handlers.js');
@@ -12,3 +11,5 @@ const main = async () => {
 
     await Promise.all([ eventHandler(client), commandHandler(client) ]);
 }
+
+main();

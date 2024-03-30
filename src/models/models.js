@@ -74,6 +74,11 @@ const SwiperInChannel = (sequelize, Sequelize) => {
             primaryKey: true,
         },
 
+        channelId: {
+            type: Sequelize.STRING(25),
+            allowNull: false,
+        },
+
         messageId: {
             type: Sequelize.STRING(25),
             allowNull: false,

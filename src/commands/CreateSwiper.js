@@ -1,6 +1,3 @@
-const db = require('../models');
-const Swiper = db.Swiper;
-const SwiperImage = db.SwiperImage;
 const { Client, CommandInteraction } = require("discord.js");
 const { getSwiperByName, addSwiper } = require('../services/Swiper');
 
@@ -61,6 +58,7 @@ module.exports = {
                 });
             }
         } catch (error) {
+            console.error(error);
             return interaction.reply({
                 content: 'Something bad happened',
                 ephemeral: true

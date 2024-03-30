@@ -50,7 +50,7 @@ module.exports = {
             });
         }
 
-        if(!addSwiperImage(swiperName, imageName, imageUrl)) {
+        if(!await addSwiperImage(swiperName, imageName, imageUrl)) {
             return interaction.reply({
                 content: "Something bad happened",
                 ephemeral: true,

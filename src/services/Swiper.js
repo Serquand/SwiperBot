@@ -1,6 +1,9 @@
+const { TextChannel } = require('discord.js');
 const db = require('../models');
+const { fetchMessageById } = require('../tools/discord');
 const ModelSwiper = db.Swiper;
 const ModelSwiperImage = db.SwiperImage;
+const SwiperInChannel = db.SwiperInChannel;
 
 let allSwipers = [];
 let allSwiperTemplate = [];
@@ -33,8 +36,34 @@ class SwiperImage {
     }
 }
 
-class Swiper extends SwiperTemplate {
+class Swiper {
+    constructor (linkedTo, messageId, type, channelId) {
+        this.linkedTo = linkedTo;
+        this.messageId = messageId;
+        this.type = type;
+        this.currentImageIndex = 0;
+        this.channelId = channelId;
+    }
 
+    goToNextImage() {
+        this.incrementCurrentImageIndex();
+        this.sendCurrentImage();
+    }
+
+    getCurrentImageUrl() {
+        const swiper = getSwiperByUid(this.linkedTo);
+        return swiper.swiperImages[this.currentImageIndex].imageUrl;
+    }
+
+    sendCurrentImage(client) {
+        const message = fetchMessageById(client, this.channelId, this.messageId);
+        message.edit(this.getCurrentImageUrl());
+    }
+
+    incrementCurrentImageIndex() {
+        const maxLength = getSwiperByUid(this.linkedTo).swiperImages.length - 1;
+        this.currentImageIndex = (maxLength === 0) ? 0 : this.currentImageIndex + 1 % maxLength;
+    }
 }
 
 /**
@@ -43,7 +72,16 @@ class Swiper extends SwiperTemplate {
  * @returns {SwiperTemplate | null | undefined}
  */
 function getSwiperByName(name) {
-    return allSwipers.find(s => s.swiperName === name);
+    return allSwiperTemplate.find(s => s.swiperName === name);
+}
+
+/**
+ *
+ * @param {String} uid
+ * @returns {SwiperTemplate | null | undefined}
+ */
+function getSwiperByUid(uid) {
+    return allSwiperTemplate.find(s => s.swiperUid === uid);
 }
 
 async function addSwiper (swiperName, swiperDescription, imageName, imageUrl) {
@@ -53,7 +91,7 @@ async function addSwiper (swiperName, swiperDescription, imageName, imageUrl) {
             description: swiperDescription,
         });
         allSwiperTemplate.push(new SwiperTemplate(swiperName, swiperDescription, data.uid));
-        await addSwiperImage(swiperName, imageName, imageUrl);
+        return await addSwiperImage(swiperName, imageName, imageUrl);;
     } catch {
         return null;
     }
@@ -64,7 +102,7 @@ async function addSwiperImage(swiperName, imageName, imageUrl) {
     if(!swiper) return null;
 
     const swiperImage = swiper.getImageByName(imageName);
-    if(!swiperImage) return null;
+    if(swiperImage) return null;
 
     try {
         await ModelSwiperImage.create({
@@ -81,7 +119,7 @@ async function addSwiperImage(swiperName, imageName, imageUrl) {
 
 async function deleteSwiperImage(swiperName, imageName) {
     const swiper = getSwiperByName(swiperName);
-    if(!swiper) return null;
+    if(!swiper || swiper.swiperImages.length < 2) return null;
 
     const swiperImage = swiper.getImageByName(imageName);
     if(!swiperImage) return null;
@@ -89,13 +127,91 @@ async function deleteSwiperImage(swiperName, imageName) {
     try {
         await SwiperImage.destroy({ where: { linkedTo: swiper.swiperUid, name: imageName } });
         swiper.removeImage(imageName);
+        return true;
     } catch {
         return null;
     }
 }
 
-function initializeSwiper() {
+async function initializeSwiper() {
+    const [resAllTemplates, resAllImages, resAllSwipers] = await Promise.all([
+        ModelSwiper.findAll({ raw: true }),
+        ModelSwiperImage.findAll({ raw: true }),
+        SwiperInChannel.findAll({ raw: true }),
+    ])
 
+    for(const template of resAllTemplates) {
+        const newTemplate = new SwiperTemplate(template.name, template.description, template.uid);
+        const allImagesAssignedToTemplate = resAllImages.filter(img => img.linkedTo === template.uid);
+        for(const image of allImagesAssignedToTemplate) {
+            newTemplate.addImage(image.url, image.name);
+        }
+        allSwiperTemplate.push(newTemplate);
+    }
+
+    for(const swiper of resAllSwipers) {
+        const newSwiper = new Swiper(swiper.linkedTo, swiper.messageId, swiper.kind, swiper.channelId);
+        allSwiperTemplate.push(newSwiper);
+    }
+}
+
+async function deleteSwiper(swiperName) {
+    const swiper = getSwiperByName(swiperName);
+    if(!swiper) return null;
+
+    try {
+        await ModelSwiper.destroy({ where: { name: swiperName } });
+        allSwiperTemplate = allSwiperTemplate.filter(s => s.swiperName !== swiperName);
+
+        await SwiperInChannel.destroy({ where: { linkedTo: swiper.swiperUid } });
+        allSwipers = allSwipers.filter(s => s.linkedTo !== swiper.swiperUid);
+
+        return true;
+    } catch (e) {
+        console.error(e);
+        return false;
+    }
+}
+
+/**
+ *
+ * @param {String} swiperName
+ * @param {TextChannel} channel
+ */
+async function sendSwiper(swiperName, channel) {
+    const swiper = getSwiperByName(swiperName);
+    const firstImage = swiper.swiperImages.at(0).imageUrl;
+
+    try {
+        const newSwiperMessage = await channel.send(firstImage);
+        await SwiperInChannel.create({
+            channelId: channel.id,
+            messageId: newSwiperMessage.id,
+            linkedTo: swiper.swiperUid,
+            kind: 'AUTO',
+        });
+        allSwipers.push(new Swiper(swiper.swiperUid, newSwiperMessage.id, 'AUTO', channel.id));
+        return true;
+    } catch (error) {
+        console.error(error);
+        return false;
+    }
+}
+
+/**
+ *
+ * @returns {Array<Swiper>}
+ */
+function getAllSwipers() {
+    return allSwipers;
+}
+
+/**
+ *
+ * @returns {Array<SwiperTemplate>}
+ */
+function getAllSwipersTemplate() {
+    return allSwiperTemplate;
 }
 
 module.exports = {
@@ -104,6 +220,11 @@ module.exports = {
     addSwiperImage,
     deleteSwiperImage,
     initializeSwiper,
+    deleteSwiper,
+    getSwiperByUid,
+    sendSwiper,
+    getAllSwipers,
+    getAllSwipersTemplate,
     SwiperTemplate,
     SwiperImage,
     Swiper

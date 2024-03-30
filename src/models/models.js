@@ -45,8 +45,14 @@ const SwiperImage = (sequelize, Sequelize) => {
             required: true,
         },
 
+        name: {
+            type: Sequelize.STRING,
+            required: true,
+        },
+
         linkedTo: {
             type: Sequelize.UUID,
+            allowNull: false,
             references: {
                 model: Swiper(sequelize, Sequelize),
                 key: 'uid'
@@ -55,7 +61,43 @@ const SwiperImage = (sequelize, Sequelize) => {
     });
 }
 
+/**
+ * @param {Sequelize} sequelize
+ * @param {SequelizeCore} Sequelize
+ * @returns {Model}
+ */
+const SwiperInChannel = (sequelize, Sequelize) => {
+    return sequelize.define('SwiperInChannel', {
+        uid: {
+            type: Sequelize.UUID,
+            defaultValue: Sequelize.UUIDV4,
+            primaryKey: true,
+        },
+
+        messageId: {
+            type: Sequelize.STRING(25),
+            allowNull: false,
+            unique: true,
+        },
+
+        linkedTo: {
+            type: Sequelize.UUID,
+            allowNull: false,
+            references: {
+                model: Swiper(sequelize, Sequelize),
+                key: 'uid'
+            }
+        },
+
+        kind: {
+            type: Sequelize.ENUM('AUTO', 'BUTTON'),
+            allowNull: false,
+        }
+    });
+}
+
 module.exports = {
     Swiper,
     SwiperImage,
+    SwiperInChannel,
 }

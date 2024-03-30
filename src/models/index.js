@@ -22,5 +22,6 @@ db.sequelize = sequelize;
 
 db.Swiper = bases.Swiper(sequelize, Sequelize);
 db.SwiperImage = bases.SwiperImage(sequelize, Sequelize);
+db.SwiperInChannel = bases.SwiperInChannel(sequelize, Sequelize);
 
 module.exports = db;

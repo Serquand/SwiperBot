@@ -139,10 +139,11 @@ async function deleteSwiperImage(swiperName, imageName) {
     if(!swiperImage) return null;
 
     try {
-        await SwiperImage.destroy({ where: { linkedTo: swiper.swiperUid, name: imageName } });
+        await ModelSwiperImage.destroy({ where: { linkedTo: swiper.swiperUid, name: imageName } });
         swiper.removeImage(imageName);
         return true;
-    } catch {
+    } catch (error) {
+        console.error(error);
         return null;
     }
 }
@@ -173,10 +174,10 @@ async function deleteSwiper(swiperName) {
     if(!swiper) return null;
 
     try {
+        await Promise.all([ SwiperInChannel.destroy({ where: { linkedTo: swiper.swiperUid } }), ModelSwiperImage.destroy({ where: { linkedTo: swiper.swiperUid } }) ]);
         await ModelSwiper.destroy({ where: { name: swiperName } });
-        allSwiperTemplate = allSwiperTemplate.filter(s => s.swiperName !== swiperName);
 
-        await SwiperInChannel.destroy({ where: { linkedTo: swiper.swiperUid } });
+        allSwiperTemplate = allSwiperTemplate.filter(s => s.swiperName !== swiperName);
         allSwipers = allSwipers.filter(s => s.linkedTo !== swiper.swiperUid);
 
         return true;

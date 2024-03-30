@@ -44,6 +44,13 @@ module.exports = {
             });
         }
 
+        if(swiper.swiperImages.length < 2) {
+            return interaction.reply({
+                content: "L'image ne peut pas être supprimé car c'est la seule sur le swiper !",
+                ephemeral: true,
+            });
+        }
+
         try {
             const result = await deleteSwiperImage(swiperName, imageName);
             if(!result) throw new Error('Something went wrong when removing image');

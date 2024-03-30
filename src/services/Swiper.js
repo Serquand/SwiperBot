@@ -45,9 +45,9 @@ class Swiper {
         this.channelId = channelId;
     }
 
-    goToNextImage() {
+    goToNextImage(client) {
         this.incrementCurrentImageIndex();
-        this.sendCurrentImage();
+        this.sendCurrentImage(client);
     }
 
     getCurrentImageUrl() {
@@ -55,14 +55,19 @@ class Swiper {
         return swiper.swiperImages[this.currentImageIndex].imageUrl;
     }
 
-    sendCurrentImage(client) {
-        const message = fetchMessageById(client, this.channelId, this.messageId);
-        message.edit(this.getCurrentImageUrl());
+    async sendCurrentImage(client) {
+        const message = await fetchMessageById(client, this.channelId, this.messageId);
+        if(message === null) {
+            deleteSwiperInChannel(this.messageId);
+        } else {
+            message.edit(this.getCurrentImageUrl());
+        }
     }
 
     incrementCurrentImageIndex() {
-        const maxLength = getSwiperByUid(this.linkedTo).swiperImages.length - 1;
-        this.currentImageIndex = (maxLength === 0) ? 0 : this.currentImageIndex + 1 % maxLength;
+        const maxLength = getSwiperByUid(this.linkedTo).swiperImages.length;
+        const nextIndex = this.currentImageIndex + 1;
+        this.currentImageIndex = (maxLength === nextIndex) ? 0 : nextIndex % maxLength;
     }
 }
 
@@ -117,6 +122,15 @@ async function addSwiperImage(swiperName, imageName, imageUrl) {
     }
 }
 
+async function deleteSwiperInChannel(discordMessageId) {
+    try {
+        await SwiperInChannel.destroy({ where: { messageId: discordMessageId } });
+        allSwipers = allSwipers.filter(s => s.messageId !== discordMessageId);
+    } catch (err) {
+        console.error(err);
+    }
+}
+
 async function deleteSwiperImage(swiperName, imageName) {
     const swiper = getSwiperByName(swiperName);
     if(!swiper || swiper.swiperImages.length < 2) return null;
@@ -150,8 +164,7 @@ async function initializeSwiper() {
     }
 
     for(const swiper of resAllSwipers) {
-        const newSwiper = new Swiper(swiper.linkedTo, swiper.messageId, swiper.kind, swiper.channelId);
-        allSwiperTemplate.push(newSwiper);
+        allSwipers.push(new Swiper(swiper.linkedTo, swiper.messageId, swiper.kind, swiper.channelId));
     }
 }
 

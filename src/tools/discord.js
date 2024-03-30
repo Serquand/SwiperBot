@@ -14,29 +14,46 @@ function getTheGuild(client, guildId) {
  *
  * @param {Client} client
  * @param {String} channelId
- * @param {Channel}
+ * @returns {Promise<Channel | null>}
  */
-function getTheChannel(client, channelId) {
-    return client.channels.fetch(channelId);
+async function getTheChannel(client, channelId) {
+    try {
+        const channel = await client.channels.fetch(channelId);
+        return channel;
+    } catch (error) {
+        return null;
+    }
 }
 
 /**
  *
  * @param {TextChannel} channel
  * @param {String} messageId
+ * @returns {Promise<Message | null>}
  */
-function getTheMessage(channel, messageId) {
-    return channel.messages.fetch(messageId);
+async function getTheMessage(channel, messageId) {
+    try {
+        const message = await channel.messages.fetch(messageId);
+        return message;
+    } catch (error) {
+        return null;
+    }
 }
 
 /**
  *
  * @param {Client} client
  * @param {String} messageId
- * @returns {Message}
+ * @returns {Promise<Message | null>}
  */
 async function fetchMessageById (client, channelId, messageId) {
-    return getTheMessage(getTheChannel(client, channelId), messageId);
+    try {
+        const channel = await getTheChannel(client, channelId);
+        if(channel === null) return null;
+        return getTheMessage(channel, messageId);
+    } catch (e) {
+        return null;
+    }
 }
 
 module.exports = {

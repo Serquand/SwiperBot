@@ -6,13 +6,13 @@ const { eventHandler, commandHandler } = require('./tools/handlers.js');
 const db = require('./models');
 const { getAllSwipers, initializeSwiper } = require('./services/Swiper.js');
 
-const initializeTurnOver = () => {
+const initializeTurnOver = (client) => {
     setInterval(() => {
         const allSwipers = getAllSwipers();
         for (const swiper of allSwipers) {
-            swiper.type === 'AUTO' && swiper.goToNextImage();
+            swiper.type === 'AUTO' && swiper.goToNextImage(client);
         }
-    }, 100);
+    }, 5_000);
 }
 
 const main = async () => {
@@ -22,13 +22,12 @@ const main = async () => {
 
     await Promise.all([ eventHandler(client), commandHandler(client) ]);
 
-
     setTimeout(async () => {
         await db.sequelize.sync();
         await initializeSwiper();
-        initializeTurnOver();
+        initializeTurnOver(client);
         console.log('Everything initialized !');
-    }, process.env.MODE === 'dev' ? 1 : 10_000);
+    }, process.env.MODE === 'dev' ? 1_000 : 10_000);
 }
 
 main();

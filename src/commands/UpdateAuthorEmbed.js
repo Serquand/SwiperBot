@@ -1,7 +1,8 @@
 const db = require('../models');
 const Embed = db.Embed;
 const { Client, CommandInteraction } = require("discord.js");
-const { getEmbedByName } = require("../services/Embed");
+const { getEmbedByName, getListEmbed } = require("../services/Embed");
+const { sendAutocomplete } = require('../tools/autocomplete');
 
 module.exports = {
     name: "udpate_author_embed",
@@ -11,7 +12,8 @@ module.exports = {
             name: 'embed_name',
             required: true,
             type: "STRING",
-            description: "Le nom de l'Embed à envoyer"
+            description: "Le nom de l'Embed à envoyer",
+            autocomplete: true,
         },
         {
             name: 'author_name',
@@ -59,9 +61,9 @@ module.exports = {
         const authorUrl = needToDelete ? null : interaction.options.getString('author_url');
         const authorObject = needToDelete ? null : { iconUrl: authorIconUrl, name: authorName, url: authorUrl };
 
-        if(authorObject && authorObject.name.length > 250) {
+        if(authorObject && authorObject.name && authorObject.name.length > 250) {
             return interaction.reply({
-                content: "Le nom de l'auteur est trop long. Longueur maximale autorisée : 250 caractères",
+                content: "Le nom de l'auteur est invalide",
                 ephemeral: true,
             })
         }
@@ -81,5 +83,6 @@ module.exports = {
                 ephemeral: true,
             });
         }
-    }
+    },
+    autocomplete: interaction => sendAutocomplete(interaction, getListEmbed(), 'name')
 }

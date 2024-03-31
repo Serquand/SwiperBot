@@ -1,5 +1,6 @@
 const { Client, CommandInteraction } = require("discord.js");
-const { getEmbedByName } = require("../services/Embed");
+const { getEmbedByName, getListEmbed } = require("../services/Embed");
+const { sendAutocomplete } = require("../tools/autocomplete");
 
 module.exports = {
     name: 'see_embed',
@@ -9,7 +10,8 @@ module.exports = {
             name: 'embed_name',
             description: "Le nom de l'Embed à afficher",
             required: true,
-            type: 'STRING'
+            type: 'STRING',
+            autocomplete: true,
         }
     ],
     /**
@@ -25,5 +27,6 @@ module.exports = {
         } else {
             return interaction.reply({ embeds: [embed.generateEmbed()], ephemeral: true });
         }
-    }
+    },
+    autocomplete: (interaction) => sendAutocomplete(interaction, getListEmbed(), 'name')
 }

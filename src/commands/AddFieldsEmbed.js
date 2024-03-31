@@ -1,5 +1,6 @@
 const { Client, CommandInteraction } = require("discord.js");
-const { getEmbedByName } = require("../services/Embed");
+const { getEmbedByName, getListEmbed } = require("../services/Embed");
+const { sendAutocomplete } = require('../tools/autocomplete');
 
 module.exports = {
     name: "add_fields_embed",
@@ -10,7 +11,8 @@ module.exports = {
             name: "embed_name",
             type: "STRING",
             reuqired: true,
-            description: "Le nom de l'Embed"
+            description: "Le nom de l'Embed",
+            autocomplete: true,
         },
         {
             name: "field_name",
@@ -41,7 +43,6 @@ module.exports = {
         const fieldName = interaction.options.getString('field_name');
         const fieldValue = interaction.options.getString('field_value');
         const fieldInline = interaction.options.getBoolean('field_inline');
-        console.log(embedName, fieldName, fieldValue, fieldInline);
 
         // Check if the embed really exists
         const embed = getEmbedByName(embedName);
@@ -56,6 +57,20 @@ module.exports = {
         if(embed.getFieldByName(fieldName)) {
             return interaction.reply({
                 content: "Le champ que vous voulez créer existe déjà !",
+                ephemeral: true,
+            });
+        }
+
+        if(!fieldName) {
+            return interaction.reply({
+                content: "Vous devez remplir le nom du champ à ajouter",
+                ephemeral: true,
+            });
+        }
+
+        if(!fieldValue) {
+            return interaction.reply({
+                content: "Vous devez remplir la valeur du champ à ajouter",
                 ephemeral: true,
             });
         }
@@ -79,5 +94,6 @@ module.exports = {
                 ephemeral: true,
             });
         }
-    }
+    },
+    autocomplete: (interaction) => sendAutocomplete(interaction, getListEmbed(), 'name')
 };

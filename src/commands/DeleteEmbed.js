@@ -1,5 +1,6 @@
 const { Client, CommandInteraction } = require("discord.js");
 const { getEmbedByName, deleteEmbed } = require("../services/Embed");
+const { sendAutocomplete } = require("../tools/autocomplete");
 
 module.exports = {
     name: "delete_embed",
@@ -10,6 +11,7 @@ module.exports = {
             type: "STRING",
             required: true,
             description: "Le nom de l'Embed à supprimer",
+            autocomplete: true,
         },
         {
             name: "cascade",
@@ -55,5 +57,6 @@ module.exports = {
                 ephemeral: true,
             });
         }
-    }
+    },
+    autocomplete: (interaction) => sendAutocomplete(interaction, getListEmbed(), 'name')
 }

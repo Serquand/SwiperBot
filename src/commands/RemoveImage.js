@@ -1,5 +1,6 @@
-const { Client, CommandInteraction } = require("discord.js");
-const { getSwiperByName, deleteSwiperImage } = require("../services/Swiper");
+const { Client, CommandInteraction, AutocompleteInteraction } = require("discord.js");
+const { getSwiperByName, deleteSwiperImage, getAllSwipers, getAllSwipersTemplate } = require("../services/Swiper");
+const { sendAutocomplete } = require("../tools/autocomplete");
 
 module.exports = {
     name: 'remove_image',
@@ -9,13 +10,15 @@ module.exports = {
             name: 'swiper_name',
             required: true,
             type: "STRING",
-            description: 'Le nom du swiper à modifier'
+            description: 'Le nom du swiper à modifier',
+            autocomplete: true,
         },
         {
             name: 'image_name',
             required: true,
             type: "STRING",
-            description: "Le nom de l'image à supprimer"
+            description: "Le nom de l'image à supprimer",
+            autocomplete: true,
         },
     ],
     /**
@@ -66,5 +69,19 @@ module.exports = {
             content: 'Image removed successfully',
             ephemeral: true,
         });
+    },
+    /**
+     *
+     * @param {AutocompleteInteraction} interaction
+     */
+    autocomplete: interaction => {
+        if(interaction.options.getFocused(true).name === 'swiper_name') {
+            return sendAutocomplete(interaction, getAllSwipersTemplate(), 'swiperName');
+        } else {
+            const swiperName = interaction.options.getString('swiper_name');
+            const swiper = getSwiperByName(swiperName);
+            if(!swiper) return null;
+            return sendAutocomplete(interaction, swiper.swiperImages, 'imageName')
+        }
     }
 }

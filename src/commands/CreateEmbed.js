@@ -1,6 +1,7 @@
 const { Client, CommandInteraction } = require("discord.js");
-const { getSwiperByName } = require("../services/Swiper");
+const { getSwiperByName, getAllSwipersTemplate } = require("../services/Swiper");
 const { addEmbed, getEmbedByName } = require("../services/Embed");
+const { sendAutocomplete } = require("../tools/autocomplete");
 
 module.exports = {
     name: 'create_embed',
@@ -28,7 +29,8 @@ module.exports = {
             name: "embed_swiper",
             type: "STRING",
             required: false,
-            description: "Le swiper à ajouter dans l'Embed"
+            description: "Le swiper à ajouter dans l'Embed",
+            autocomplete: true
         },
         {
             name: "embed_author_name",
@@ -139,5 +141,6 @@ module.exports = {
                 ephemeral: true
             });
         };
-    }
+    },
+    autocomplete: interaction => sendAutocomplete(interaction, getAllSwipersTemplate(), 'swiperName'),
 }

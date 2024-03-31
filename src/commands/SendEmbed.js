@@ -1,5 +1,6 @@
 const { Client, CommandInteraction } = require("discord.js");
-const { getEmbedByName } = require("../services/Embed");
+const { getEmbedByName, getListEmbed } = require("../services/Embed");
+const { sendAutocomplete } = require("../tools/autocomplete");
 
 module.exports = {
     name: "send_embed",
@@ -9,7 +10,8 @@ module.exports = {
             name: 'embed_name',
             required: true,
             type: "STRING",
-            description: "Le nom de l'Embed à envoyer"
+            description: "Le nom de l'Embed à envoyer",
+            autocomplete: true
         },
         {
             name: 'channel',
@@ -39,5 +41,6 @@ module.exports = {
             content: "L'Embed a bien été envoyé",
             ephemeral: true
         });
-    }
+    },
+    autocomplete: (interaction) => sendAutocomplete(interaction, getListEmbed(), 'name'),
 }

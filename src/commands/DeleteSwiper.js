@@ -1,5 +1,6 @@
 const { Client, CommandInteraction } = require("discord.js");
-const { getSwiperByName, deleteSwiper } = require("../services/Swiper");
+const { getSwiperByName, deleteSwiper, getAllSwipersTemplate } = require("../services/Swiper");
+const { sendAutocomplete } = require("../tools/autocomplete");
 
 module.exports = {
     name: "delete_swiper",
@@ -9,7 +10,8 @@ module.exports = {
             name: 'swiper_name',
             required: true,
             description: "Nom du swiper à supprimer",
-            type: "STRING"
+            type: "STRING",
+            autocomplete: true,
         }
     ],
     /**
@@ -43,5 +45,6 @@ module.exports = {
             content: "Le swiper a bien été supprimé !",
             ephemeral: true,
         });
-    }
+    },
+    autocomplete: interaction => sendAutocomplete(interaction, getAllSwipersTemplate(), 'swiperName')
 }

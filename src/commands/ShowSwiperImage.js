@@ -1,5 +1,6 @@
-const { Client, CommandInteraction } = require("discord.js");
-const { getSwiperByName } = require("../services/Swiper");
+const { Client, CommandInteraction, AutocompleteInteraction } = require("discord.js");
+const { getSwiperByName, getAllSwipers, getAllSwipersTemplate } = require("../services/Swiper");
+const { sendAutocomplete } = require("../tools/autocomplete");
 
 module.exports = {
     name: 'show_swiper_image',
@@ -10,12 +11,14 @@ module.exports = {
             type: 'STRING',
             required: true,
             description: "Le nom du swiper à afficher",
+            autocomplete: true,
         },
         {
             name: 'image_name',
             type: 'STRING',
             required: true,
             description: "Le nom de l'image à afficher",
+            autocomplete: true,
         },
     ],
     /**
@@ -44,5 +47,19 @@ module.exports = {
             content: swiperImage.imageUrl,
             ephemeral: true
         });
+    },
+    /**
+     *
+     * @param {AutocompleteInteraction} interaction
+     */
+    autocomplete: interaction => {
+        if(interaction.options.getFocused(true).name === 'swiper_name') {
+            return sendAutocomplete(interaction, getAllSwipersTemplate(), 'swiperName')
+        } else {
+            const swiperName = interaction.options.getString('swiper_name');
+            const swiper = getSwiperByName(swiperName);
+            if(!swiper) return null;
+            return sendAutocomplete(interaction, swiper.swiperImages, 'imageName')
+        }
     }
 }

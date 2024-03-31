@@ -1,4 +1,5 @@
-const { getSwiperByName, addSwiperImage } = require("../services/Swiper");
+const { getSwiperByName, addSwiperImage, getAllSwipers } = require("../services/Swiper");
+const { sendAutocomplete } = require("../tools/autocomplete");
 
 module.exports = {
     name: 'add_images',
@@ -9,6 +10,7 @@ module.exports = {
             type: 'STRING',
             required: true,
             description: 'Le nom du swiper à modifier',
+            autocomplete: true,
         },
         {
             name: 'image_name',
@@ -61,5 +63,6 @@ module.exports = {
             content: "L'image a bien été ajouté dans le swiper !",
             ephemeral: true,
         });
-    }
+    },
+    autocomplete: (interaction) => sendAutocomplete(interaction, getAllSwipers(), 'swiperName')
 }

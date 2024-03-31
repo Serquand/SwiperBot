@@ -1,6 +1,7 @@
 const { Client, CommandInteraction } = require("discord.js");
 const { Embed } = require("../models");
-const { getEmbedByName } = require("../services/Embed");
+const { getEmbedByName, getListEmbed } = require("../services/Embed");
+const { sendAutocomplete } = require("../tools/autocomplete");
 
 module.exports = {
     name: 'update_description_embed',
@@ -10,7 +11,8 @@ module.exports = {
             name: 'embed_name',
             type: 'STRING',
             required: true,
-            description: "Nom de l'Embed à modifier"
+            description: "Nom de l'Embed à modifier",
+            autocomplete: true,
         },
         {
             name: 'new_description',
@@ -58,5 +60,6 @@ module.exports = {
                 ephemeral: true,
             });
         }
-    }
+    },
+    autocomplete: interaction => sendAutocomplete(interaction, getListEmbed(), 'name')
 }

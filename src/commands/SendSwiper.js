@@ -1,5 +1,6 @@
 const { Client, CommandInteraction } = require("discord.js");
-const { getSwiperByName, sendSwiper } = require("../services/Swiper");
+const { getSwiperByName, sendSwiper, getAllSwipersTemplate } = require("../services/Swiper");
+const { sendAutocomplete } = require("../tools/autocomplete");
 
 module.exports = {
     name: "send_swiper",
@@ -9,7 +10,8 @@ module.exports = {
             name: 'swiper_name',
             type: "STRING",
             description: 'Le nom du swiper à envoyer',
-            required: true
+            required: true,
+            autocomplete: true,
         },
         {
             name: 'channel',
@@ -53,5 +55,6 @@ module.exports = {
             content: "Le swiper a bien été envoyé !",
             ephemeral: true,
         });
-    }
+    },
+    autocomplete: interaction => sendAutocomplete(interaction, getAllSwipersTemplate(), 'swiperName')
 }

@@ -27,14 +27,10 @@ module.exports = {
                 if (!command) {
                     throw new Error(`No command matching ${interaction.commandName} was found.`);
                 }
-                await command.autocomplete(client, interaction);
+                await command.autocomplete(interaction);
             } catch (error) {
                 console.error(error);
             }
-        }
-
-        if(interaction.isButton()) {
-            console.log(interaction.customId);
         }
     }
 }

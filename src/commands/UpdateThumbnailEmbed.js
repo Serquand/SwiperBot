@@ -1,5 +1,6 @@
 const { Embed } = require("../models");
-const { getEmbedByName } = require("../services/Embed");
+const { getEmbedByName, getListEmbed } = require("../services/Embed");
+const { sendAutocomplete } = require("../tools/autocomplete");
 
 module.exports = {
     name: "update_thumnail_embed",
@@ -9,7 +10,8 @@ module.exports = {
             name: 'embed_name',
             type: 'STRING',
             required: true,
-            description: "Le nom de l'Embed à modifier"
+            description: "Le nom de l'Embed à modifier",
+            autocomplete: true,
         },
         {
             name: 'thumbnail_url',
@@ -52,5 +54,6 @@ module.exports = {
                 ephemeral: true,
             });
         }
-    }
+    },
+    autocomplete: interaction => sendAutocomplete(interaction, getListEmbed(), 'name')
 }

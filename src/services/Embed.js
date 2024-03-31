@@ -148,7 +148,6 @@ async function initializeAllEmbeds() {
         const newEmbed = new Embed(template.color, author, template.title, template.description, template.imageUrl, template.thumbnailUrl, template.name, fieldAssigned, template.uid);
         listEmbed.push(newEmbed);
     }
-    console.log(listEmbed);
 }
 
 module.exports = {

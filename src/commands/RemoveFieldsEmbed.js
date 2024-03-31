@@ -1,5 +1,6 @@
-const { Client, CommandInteraction } = require("discord.js");
-const { getEmbedByName } = require("../services/Embed");
+const { Client, CommandInteraction, AutocompleteInteraction } = require("discord.js");
+const { getEmbedByName, getListEmbed } = require("../services/Embed");
+const { sendAutocomplete } = require("../tools/autocomplete");
 
 module.exports = {
     name: 'remove_field_embed',
@@ -10,12 +11,14 @@ module.exports = {
             description: "Le nom de l'Embed à modifier",
             type: 'STRING',
             required: true,
+            autocomplete: true,
         },
         {
             name: 'field_name',
             description: "Le nom du champ à supprimer",
             type: 'STRING',
             required: true,
+            autocomplete: true,
         }
     ],
     /**
@@ -60,6 +63,20 @@ module.exports = {
                 content: "Something went wrong",
                 ephemeral: true,
             });
+        }
+    },
+    /**
+     *
+     * @param {AutocompleteInteraction} interaction
+     */
+    autocomplete: interaction => {
+        if(interaction.options.getFocused(true).name === 'embed_name') {
+            sendAutocomplete(interaction, getListEmbed(), 'name')
+        } else if(interaction.options.getFocused(true).name === 'field_name') {
+            const embedName = interaction.options.getString('embed_name');
+            const embed = getEmbedByName(embedName);
+            if(!embed) return null;
+            sendAutocomplete(interaction, embed.fields, 'name');
         }
     }
 }

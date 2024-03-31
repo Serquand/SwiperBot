@@ -1,6 +1,8 @@
+const { AutocompleteInteraction } = require("discord.js");
 const { Embed } = require("../models");
-const { getEmbedByName } = require("../services/Embed");
-const { getSwiperByName } = require("../services/Swiper");
+const { getEmbedByName, getListEmbed } = require("../services/Embed");
+const { getSwiperByName, getAllSwipers, getAllSwipersTemplate } = require("../services/Swiper");
+const { sendAutocomplete } = require("../tools/autocomplete");
 
 module.exports = {
     name: 'update_swiper_embed',
@@ -11,11 +13,13 @@ module.exports = {
             type: 'STRING',
             description: "Nom de l'Embed à modifier",
             required: true,
+            autocomplete: true,
         },
         {
             name: 'swiper_name',
             type: 'STRING',
             description: "Nom du swiper",
+            autocomplete: true,
             required: true,
         },
         {
@@ -52,6 +56,17 @@ module.exports = {
                 content: "Something bad happened",
                 ephemeral: true,
             });
+        }
+    },
+    /**
+     *
+     * @param {AutocompleteInteraction} interaction
+     */
+    autocomplete: interaction => {
+        if(interaction.options.getFocused(true).name === 'embed_name') {
+            sendAutocomplete(interaction, getListEmbed(), 'name')
+        } else {
+            sendAutocomplete(interaction, getAllSwipersTemplate(), 'swiperName')
         }
     }
 }

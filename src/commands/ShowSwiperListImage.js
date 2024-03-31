@@ -1,5 +1,6 @@
 const { Client, CommandInteraction } = require("discord.js");
-const { getSwiperByName } = require("../services/Swiper");
+const { getSwiperByName, getAllSwipers, getAllSwipersTemplate } = require("../services/Swiper");
+const { sendAutocomplete } = require("../tools/autocomplete");
 
 module.exports = {
     name: 'show_swiper_list_image',
@@ -10,6 +11,7 @@ module.exports = {
             type: "STRING",
             description: "Le nom du swiper à afficher",
             required: true,
+            autocomplete: true
         },
     ],
     /**
@@ -32,5 +34,6 @@ module.exports = {
             .join('\n');
 
         return interaction.reply({ content, ephemeral: true });
-    }
+    },
+    autocomplete: interaction => sendAutocomplete(interaction, getAllSwipersTemplate(), 'swiperName')
 }

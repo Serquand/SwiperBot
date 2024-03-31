@@ -4,6 +4,7 @@ const ModelEmbedField = db.EmbedField;
 const ModelEmbedInChannel = db.EmbedInChannel;
 
 const { MessageEmbed } = require("discord.js");
+const { getSwiperByUid } = require('./Swiper');
 
 const listEmbed = [];
 
@@ -18,6 +19,15 @@ class Embed {
         this.thumbnailUrl = thumbnailUrl;
         this.name = name;
         this.uid = uid;
+    }
+
+    updateSwiper(newSwiperUid) {
+        if(newSwiperUid) {
+            this.imageUrl = getSwiperByUid(newSwiperUid) ?? null;
+        } else {
+            this.imageUrl = null;
+        }
+        this.synchronize();
     }
 
     update(key, newValue) {

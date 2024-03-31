@@ -124,7 +124,7 @@ module.exports = {
             if(result) {
                 return interaction.reply({
                     content: "L'Embed a bien été créé !",
-                    ephemeral: true
+                    ephemeral: true,
                 });
             } else {
                 return interaction.reply({

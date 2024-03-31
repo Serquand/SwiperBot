@@ -3,8 +3,8 @@ const { getEmbedByName } = require("../services/Embed");
 const { Embed } = require("../models");
 
 module.exports = {
-    name: "",
-    description: "",
+    name: "update_color_embed",
+    description: "Modifie la couleur d'un Embed",
     options: [
         {
             name: 'embed_name',
@@ -48,8 +48,9 @@ module.exports = {
             await Embed.update({ color: newColor }, { where: { name: embedName } });
             embed.update('color', newColor);
             return interaction.reply({
-                content: "L'auteur de l'Embed a bien été modifié",
+                content: "La couleur de l'Embed a bien été modifié",
                 ephemeral: true,
+                embeds: [embed.generateEmbed()]
             });
         } catch (error) {
             console.error(error);

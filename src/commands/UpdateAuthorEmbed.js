@@ -72,6 +72,7 @@ module.exports = {
             return interaction.reply({
                 content: "L'auteur de l'Embed a bien été modifié",
                 ephemeral: true,
+                embeds: [embed.generateEmbed()]
             });
         } catch (error) {
             console.error(error);

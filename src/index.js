@@ -5,6 +5,7 @@ const { Client, Collection, MessageEmbed } = require('discord.js');
 const { eventHandler, commandHandler } = require('./tools/handlers.js');
 const db = require('./models');
 const { getAllSwipers, initializeSwiper } = require('./services/Swiper.js');
+const { initializeAllEmbeds } = require('./services/Embed.js');
 
 const initializeTurnOver = (client) => {
     setInterval(() => {
@@ -27,6 +28,7 @@ const main = async () => {
     setTimeout(async () => {
         await db.sequelize.sync();
         await initializeSwiper();
+        await initializeAllEmbeds();
         initializeTurnOver(client);
         console.log('Everything initialized !');
     }, process.env.MODE === 'dev' ? 1_000 : 10_000);

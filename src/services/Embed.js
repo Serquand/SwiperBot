@@ -3,13 +3,13 @@ const ModelEmbed = db.Embed;
 const ModelEmbedField = db.EmbedField;
 const ModelEmbedInChannel = db.EmbedInChannel;
 
-const { MessageEmbed } = require("discord.js");
+const { MessageEmbed, TextChannel } = require("discord.js");
 const { getSwiperByUid } = require('./Swiper');
 
 const listEmbed = [];
 
 class Embed {
-    constructor (color, author, title, description, imageUrl, thumbnailUrl, name, fields, uid) {
+    constructor (color, author, title, description, imageUrl, thumbnailUrl, name, fields, uid, paths) {
         this.fields = fields;
         this.color = color;
         this.author = author;
@@ -19,6 +19,11 @@ class Embed {
         this.thumbnailUrl = thumbnailUrl;
         this.name = name;
         this.uid = uid;
+        this.allPaths = paths ?? [];
+    }
+
+    addPath(channelId, messageId) {
+        this.allPaths.push({ channelId, messageId });
     }
 
     updateSwiper(newSwiperUid) {
@@ -78,6 +83,16 @@ class Embed {
         return embed;
     }
 
+    /**
+     *
+     * @param {TextChannel} channel
+     */
+    async sendEmbedInChannel(channel) {
+        const message = await channel.send({ embeds: [this.generateEmbed()] });
+        ModelEmbedInChannel.create({ channelId: channel.id, messageId: message.id, linkedTo: this.uid  })
+        this.addPath(channel.id, message.id);
+    }
+
     synchronize() {
         const embed = this.generateEmbed();
     }
@@ -87,7 +102,7 @@ async function addEmbed(color, authorIconUrl, authorUrl, authorName, title, desc
     try {
         const { dataValues: data } = await ModelEmbed.create({ name, title, authorName, authorIconUrl, authorUrl, color, description, imageUrl, thumbnailUrl });
         const author = { name: authorName, url: authorUrl, iconUrl: authorIconUrl };
-        listEmbed.push(new Embed(color, author, title, description, imageUrl, thumbnailUrl, name, [], data.uid));
+        listEmbed.push(new Embed(color, author, title, description, imageUrl, thumbnailUrl, name, [], data.uid, []));
         return true;
     } catch (error) {
         return false;
@@ -96,10 +111,6 @@ async function addEmbed(color, authorIconUrl, authorUrl, authorName, title, desc
 
 function getListEmbed() {
     return listEmbed;
-}
-
-async function removeFromEditList(uid) {
-    listEmbedUpdated = listEmbedUpdated.filter(embed => embed.uid !== uid);
 }
 
 /**
@@ -121,10 +132,29 @@ async function deleteEmbed(embed, cascade) {
 
 }
 
+async function initializeAllEmbeds() {
+    const [embedTemplate, embedTemplateField, embedInChannel] = await Promise.all([
+        ModelEmbed.findAll({ raw: true }),
+        ModelEmbedField.findAll({ raw: true }),
+        ModelEmbedInChannel.findAll({ raw: true }),
+    ]);
+    console.log(embedTemplateField, embedInChannel);
+
+    for(const template of embedTemplate) {
+        const author = { iconUrl: template.authorIconUrl, url: template.authorUrl, name: template.authorName };
+        const fieldAssigned = embedTemplateField
+            .filter(field => field.linkedTo === template.uid)
+            .map(field => ({ value: field.value, name: field.name, inline: field.inline }));
+        const newEmbed = new Embed(template.color, author, template.title, template.description, template.imageUrl, template.thumbnailUrl, template.name, fieldAssigned, template.uid);
+        listEmbed.push(newEmbed);
+    }
+    console.log(listEmbed);
+}
+
 module.exports = {
     getEmbedByName,
     addEmbed,
     deleteEmbed,
-    removeFromEditList,
     getListEmbed,
+    initializeAllEmbeds,
 }

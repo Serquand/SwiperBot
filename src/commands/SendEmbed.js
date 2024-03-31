@@ -33,5 +33,11 @@ module.exports = {
         } else if(!channel.isText()) {
             return interaction.reply({ content: "Le channel d'envoi n'est pas valide !", ephemeral: true });
         }
+
+        embed.sendEmbedInChannel(channel);
+        return interaction.reply({
+            content: "L'Embed a bien été envoyé",
+            ephemeral: true
+        });
     }
 }

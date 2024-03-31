@@ -3,6 +3,7 @@ const { getEmbedByName, deleteEmbed } = require("../services/Embed");
 
 module.exports = {
     name: "delete_embed",
+    description: "Supprime un Embed",
     options: [
         {
             name: 'embed_name',

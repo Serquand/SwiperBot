@@ -1,7 +1,7 @@
 const dotenv = require('dotenv');
 dotenv.config();
 
-const { Client, Collection } = require('discord.js');
+const { Client, Collection, MessageEmbed } = require('discord.js');
 const { eventHandler, commandHandler } = require('./tools/handlers.js');
 const db = require('./models');
 const { getAllSwipers, initializeSwiper } = require('./services/Swiper.js');
@@ -14,6 +14,8 @@ const initializeTurnOver = (client) => {
         }
     }, 5_000);
 }
+
+const embed = new MessageEmbed();
 
 const main = async () => {
     const client = new Client({ intents: 3276799 });

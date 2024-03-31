@@ -1,6 +1,14 @@
+const { Client, Interaction } = require("discord.js");
+
 module.exports = {
     name: "interactionCreate",
     once: false,
+    /**
+     *
+     * @param {Client} client
+     * @param {Interaction} interaction
+     * @returns
+     */
     async execute(client, interaction) {
         if(interaction.isCommand()) {
             const cmd = client.commands.get(interaction.commandName);
@@ -23,6 +31,10 @@ module.exports = {
             } catch (error) {
                 console.error(error);
             }
+        }
+
+        if(interaction.isButton()) {
+            console.log(interaction.customId);
         }
     }
 }

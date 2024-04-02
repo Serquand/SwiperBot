@@ -240,6 +240,11 @@ const EmbedInChannel = (sequelize, Sequelize) => {
                 key: 'uid'
             }
         },
+
+        swiperType: {
+            type: Sequelize.ENUM('AUTO', 'BUTTON'),
+            allowNull: true,
+        }
     })
 }
 

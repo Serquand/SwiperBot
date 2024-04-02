@@ -5,18 +5,21 @@ const { Client, Collection, MessageEmbed } = require('discord.js');
 const { eventHandler, commandHandler } = require('./tools/handlers.js');
 const db = require('./models');
 const { getAllSwipers, initializeSwiper } = require('./services/Swiper.js');
-const { initializeAllEmbeds } = require('./services/Embed.js');
+const { initializeAllEmbeds, getListEmbed } = require('./services/Embed.js');
 
 const initializeTurnOver = (client) => {
     setInterval(() => {
-        const allSwipers = getAllSwipers();
-        for (const swiper of allSwipers) {
+        for (const swiper of getAllSwipers()) {
             swiper.type === 'AUTO' && swiper.goToNextImage(client);
+        }
+
+        for(const embed of getListEmbed()) {
+            for(const embedSent of embed.getListOfEmbedsSent()) {
+                embedSent.refreshSwiper(client);
+            }
         }
     }, 5_000);
 }
-
-const embed = new MessageEmbed();
 
 const main = async () => {
     const client = new Client({ intents: 3276799 });

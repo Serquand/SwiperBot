@@ -1,7 +1,7 @@
 const { AutocompleteInteraction } = require("discord.js");
 const { Embed } = require("../models");
 const { getEmbedByName, getListEmbed } = require("../services/Embed");
-const { getSwiperByName, getAllSwipers, getAllSwipersTemplate } = require("../services/Swiper");
+const { getSwiperByName, getAllSwipersTemplate } = require("../services/Swiper");
 const { sendAutocomplete } = require("../tools/autocomplete");
 
 module.exports = {
@@ -26,7 +26,7 @@ module.exports = {
             name: 'wanna_delete',
             required: false,
             type: "BOOLEAN",
-            description: "Voulez-vous supprimer la couleur de l'Embed ?"
+            description: "Voulez-vous supprimer le Swiper de l'Embed ?"
         }
     ],
     runSlash: async (client, interaction) => {
@@ -43,7 +43,7 @@ module.exports = {
         const swiperUid = needToDelete ? null : getSwiperByName(interaction.options.getString('swiper_name'))?.swiperUid ?? null;
 
         try {
-            await Embed.update({ imageUrl: swiperUid }, { where: { name: embedName } });
+            await Embed.update({ swiperUid, imageUrl: null }, { where: { name: embedName } });
             embed.updateSwiper(swiperUid);
             return interaction.reply({
                 content: "Le swiper de l'Embed a bien été modifié",

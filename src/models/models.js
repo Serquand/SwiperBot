@@ -155,6 +155,14 @@ const Embed = (sequelize, Sequelize) => {
             required: false,
         },
 
+        swiperUid: {
+            type: Sequelize.UUID,
+            references: {
+                model: Swiper(sequelize, Sequelize),
+                key: "uid"
+            }
+        },
+
         thumbnailUrl: {
             type: Sequelize.TEXT,
             required: false,

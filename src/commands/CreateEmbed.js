@@ -26,10 +26,17 @@ module.exports = {
             description: "Le titre de l'Embed à créer"
         },
         {
-            name: "embed_swiper",
+            name: "embed_swiper_name",
             type: "STRING",
             required: false,
             description: "Le swiper à ajouter dans l'Embed",
+            autocomplete: true
+        },
+        {
+            name: "embed_image_url",
+            type: "STRING",
+            required: false,
+            description: "L'URL de l'image à ajouter dans l'Embed",
             autocomplete: true
         },
         {
@@ -78,6 +85,7 @@ module.exports = {
         const embedAuthorUrl = interaction.options.getString('embed_author_url');
         const embedThumbnailUrl = interaction.options.getString('embed_thumbnail_url');
         const color = interaction.options.getString('color');
+        const embedImageUrl = interaction.options.getString('embed_image_url');
 
         // Check if the swiper really exists
         const swiper = getSwiperByName(embedSwiper);
@@ -122,7 +130,7 @@ module.exports = {
 
         // Add the Embed
         try {
-            const result = await addEmbed(color, embedAuthorIconUrl, embedAuthorUrl, embedAuthorName, embedTitle, embedDescription, swiper, embedThumbnailUrl, name, interaction.channel);
+            const result = await addEmbed(color, embedAuthorIconUrl, embedAuthorUrl, embedAuthorName, embedTitle, embedDescription, embedImageUrl, embedThumbnailUrl, name, interaction.channel, swiper);
             if(result) {
                 return interaction.reply({
                     content: "L'Embed a bien été créé !",

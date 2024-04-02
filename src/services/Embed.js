@@ -9,7 +9,7 @@ const { getSwiperByUid } = require('./Swiper');
 const listEmbed = [];
 
 class Embed {
-    constructor (color, author, title, description, imageUrl, thumbnailUrl, name, fields, uid, paths) {
+    constructor (color, author, title, description, imageUrl, thumbnailUrl, name, fields, uid, paths, swiperUid) {
         this.fields = fields;
         this.color = color;
         this.author = author;
@@ -20,6 +20,18 @@ class Embed {
         this.name = name;
         this.uid = uid;
         this.allPaths = paths ?? [];
+        this.getTheSwiper(swiperUid);
+    }
+
+    getTheSwiper(swiperUid) {
+        if(swiperUid) {
+            const swiper = getSwiperByUid(swiperUid);
+            this.swiper = swiper;
+            this.hasSwiper = !!swiper;
+        } else {
+            this.swiper = null;
+            this.hasSwiper = false;
+        }
     }
 
     addPath(channelId, messageId) {
@@ -27,16 +39,14 @@ class Embed {
     }
 
     updateSwiper(newSwiperUid) {
-        if(newSwiperUid) {
-            this.imageUrl = getSwiperByUid(newSwiperUid) ?? null;
-        } else {
-            this.imageUrl = null;
-        }
+        this.getTheSwiper(newSwiperUid);
         this.synchronize();
+        this.imageUrl = null;
     }
 
     update(key, newValue) {
         this[key] = newValue;
+        if(key === 'imageUrl') this.getTheSwiper(null);
         this.synchronize();
     }
 
@@ -76,9 +86,10 @@ class Embed {
         if(this.fields && this.fields.length) embed.setFields(...this.fields);
         if(this.author && this.author.name) embed.setAuthor(this.author);
         if(this.color) embed.setColor(this.color);
-        // if(this.imageUrl) embed.setImage(this.imageUrl);
         if(this.description) embed.setDescription(this.description);
         if(this.thumbnailUrl) embed.setThumbnail(this.thumbnailUrl);
+        if (this.hasSwiper) embed.setImage(this.swiper.swiperImages[0].imageUrl);
+        else if(this.imageUrl) embed.setImage(this.imageUrl);
 
         return embed;
     }
@@ -95,16 +106,19 @@ class Embed {
 
     synchronize() {
         const embed = this.generateEmbed();
+        console.log(this.swiper, this.imageUrl);
     }
 }
 
-async function addEmbed(color, authorIconUrl, authorUrl, authorName, title, description, imageUrl, thumbnailUrl, name, channel) {
+async function addEmbed(color, authorIconUrl, authorUrl, authorName, title, description, imageUrl, thumbnailUrl, name, swiper) {
     try {
-        const { dataValues: data } = await ModelEmbed.create({ name, title, authorName, authorIconUrl, authorUrl, color, description, imageUrl, thumbnailUrl });
+        const swiperUid = swiper.uid;
+        const { dataValues: data } = await ModelEmbed.create({ name, title, authorName, authorIconUrl, authorUrl, color, description, imageUrl, thumbnailUrl, swiperUid });
         const author = { name: authorName, url: authorUrl, iconUrl: authorIconUrl };
         listEmbed.push(new Embed(color, author, title, description, imageUrl, thumbnailUrl, name, [], data.uid, []));
         return true;
     } catch (error) {
+        console.error(error);
         return false;
     }
 }
@@ -138,15 +152,16 @@ async function initializeAllEmbeds() {
         ModelEmbedField.findAll({ raw: true }),
         ModelEmbedInChannel.findAll({ raw: true }),
     ]);
-    console.log(embedTemplateField, embedInChannel);
 
     for(const template of embedTemplate) {
         const author = { iconUrl: template.authorIconUrl, url: template.authorUrl, name: template.authorName };
         const fieldAssigned = embedTemplateField
             .filter(field => field.linkedTo === template.uid)
             .map(field => ({ value: field.value, name: field.name, inline: field.inline }));
-        const newEmbed = new Embed(template.color, author, template.title, template.description, template.imageUrl, template.thumbnailUrl, template.name, fieldAssigned, template.uid);
-        listEmbed.push(newEmbed);
+        const messageInChannelAssigned = embedInChannel
+            .filter(field => field.linkedTo === template.uid)
+            .map(field => ({ channelId: field.channelId, messageId: field.messageId }));
+        listEmbed.push(new Embed(template.color, author, template.title, template.description, template.imageUrl, template.thumbnailUrl, template.name, fieldAssigned, template.uid, messageInChannelAssigned, template.swiperUid));
     }
 }
 

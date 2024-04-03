@@ -55,6 +55,10 @@ class SelectMenu {
         }
     }
 
+    update(key, value) {
+        this[key] = value;
+    }
+
     async removeOption(label) {
         try {
             await ModelSelectMenuOption.destroy({ where: { linkedTo: this.selectMenuUid, label } });
@@ -74,6 +78,8 @@ class SelectMenu {
     async synchronize() {
 
     }
+
+
 
     generateSelectMenu () {
         const optionsToSend = this.options.map((option) => ({ label: option.label, value: option.needToSend, description: option.description }));

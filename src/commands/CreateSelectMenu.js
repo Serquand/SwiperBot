@@ -35,7 +35,6 @@ module.exports = {
         const selectMenuName = interaction.options.getString('select_menu_name');
         const selectMenuDescription = interaction.options.getString('select_menu_description');
         const selectMenuTitle = interaction.options.getString('select_menu_title');
-        console.log(selectMenuName, selectMenuDescription, selectMenuTitle);
 
         // Check length of selectMenuName
         if(selectMenuName.length > 250) {

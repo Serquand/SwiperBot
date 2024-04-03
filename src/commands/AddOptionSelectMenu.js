@@ -46,7 +46,6 @@ module.exports = {
         const optionLabel = interaction.options.getString('option_label');
         const embedName = interaction.options.getString('embed_name');
         const optionDescription = interaction.options.getString('option_description');
-        console.log(selectMenuName, optionLabel, embedName, optionDescription);
 
         // Check if the menu exists
         const selectMenu = getSelectMenuByName(selectMenuName);

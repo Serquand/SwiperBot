@@ -46,7 +46,20 @@ class SelectMenu {
     async addOption(needToSend, label, description) {
         try {
             await ModelSelectMenuOption.create({ description, label, needToSend, linkedTo: this.selectMenuUid });
+            await this.synchronize();
             this.options.push({ description, label, needToSend, linkedTo: this.selectMenuUid });
+            return true;
+        } catch (e) {
+            console.error(e);
+            return false;
+        }
+    }
+
+    async removeOption(label) {
+        try {
+            await ModelSelectMenuOption.destroy({ where: { linkedTo: this.selectMenuUid, label } });
+            await this.synchronize();
+            this.options = this.options.filter(option => option.label !== label);
             return true;
         } catch (e) {
             console.error(e);
@@ -56,6 +69,10 @@ class SelectMenu {
 
     getOptionByLabel(labelOption) {
         return this.options.find(option => option.label === labelOption);
+    }
+
+    async synchronize() {
+
     }
 
     generateSelectMenu () {

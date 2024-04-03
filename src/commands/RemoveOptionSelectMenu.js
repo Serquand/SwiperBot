@@ -19,7 +19,8 @@ module.exports = {
             name: "option_label",
             type: "STRING",
             required: true,
-            description: "Le label de l'option à supprimer"
+            description: "Le label de l'option à supprimer",
+            autocomplete: true,
         }
     ],
     /**
@@ -35,7 +36,7 @@ module.exports = {
         if(!selectMenu) return sendBadInteraction(interaction, "Aucun Select Menu n'a été trouvé avec ce nom !");
 
         const option = selectMenu.getOptionByLabel(optionLabel);
-        if(option) return sendBadInteraction(interaction, "Aucun label n'a été trouvé avec ce nom !");
+        if(!option) return sendBadInteraction(interaction, "Aucun label n'a été trouvé avec ce nom !");
 
         try {
             const result = await selectMenu.removeOption(optionLabel);

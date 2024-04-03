@@ -76,8 +76,9 @@ class SelectMenu {
     }
 
     generateSelectMenu () {
+        const optionsToSend = this.options.map((option) => ({ label: option.label, value: option.needToSend, description: option.description }));
         return new MessageSelectMenu()
-            .setOptions(this.options)
+            .setOptions(...optionsToSend)
             .setCustomId(this.selectMenuUid)
             .setPlaceholder(this.placeholder)
     }

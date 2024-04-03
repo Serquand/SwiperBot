@@ -72,7 +72,6 @@ class Embed {
         this.embedsSent.push(new EmbedInChannel(messageId, channelId, this.swiperUid, type, this.uid));
     }
 
-
     getTheSwiper(swiperUid) {
         if(swiperUid) {
             this.swiper = getSwiperByUid(swiperUid);

@@ -6,6 +6,7 @@ const { sendAutocomplete } = require("../tools/autocomplete");
 module.exports = {
     name: 'update_image_embed',
     description: "Modifie l'image d'un Embed",
+    group: "Embed",
     options: [
         {
             name: 'embed_name',

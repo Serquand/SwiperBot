@@ -5,6 +5,7 @@ const { sendAutocomplete } = require("../tools/autocomplete");
 module.exports = {
     name: "delete_swiper",
     description: "Supprime un swiper",
+    group: 'Swiper',
     options: [
         {
             name: 'swiper_name',

@@ -3,6 +3,7 @@ const { getListEmbed } = require("../services/Embed")
 module.exports = {
     name: 'list_embed',
     description: 'Liste les Embeds',
+    group: "Embed",
     runSlash: (client, interaction) => {
         const allEmbed = getListEmbed();
         return interaction.reply({

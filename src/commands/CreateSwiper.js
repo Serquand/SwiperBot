@@ -4,6 +4,7 @@ const { getSwiperByName, addSwiper } = require('../services/Swiper');
 module.exports = {
     name: 'create_swiper',
     description: "Create a new swiper",
+    group: 'Swiper',
     options: [
         {
             name: 'name',

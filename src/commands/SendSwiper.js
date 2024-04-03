@@ -5,6 +5,7 @@ const { sendAutocomplete } = require("../tools/autocomplete");
 module.exports = {
     name: "send_swiper",
     description: 'Envoie un swiper',
+    group: 'Swiper',
     options: [
         {
             name: 'swiper_name',

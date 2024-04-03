@@ -5,6 +5,7 @@ const { sendAutocomplete } = require("../tools/autocomplete");
 module.exports = {
     name: 'see_embed',
     description: "Affiche un Embed",
+    group: "Embed",
     options: [
         {
             name: 'embed_name',

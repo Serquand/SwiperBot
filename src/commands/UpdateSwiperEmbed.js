@@ -7,6 +7,7 @@ const { sendAutocomplete } = require("../tools/autocomplete");
 module.exports = {
     name: 'update_swiper_embed',
     description: "Modifie le swiper d'un Embed",
+    group: "Embed",
     options: [
         {
             name: 'embed_name',

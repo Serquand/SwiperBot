@@ -5,6 +5,7 @@ const { sendAutocomplete } = require("../tools/autocomplete");
 module.exports = {
     name: "send_embed",
     description: "Envoie un Embed dans un channel",
+    group: "Embed",
     options: [
         {
             name: 'embed_name',

@@ -5,6 +5,7 @@ const { sendAutocomplete } = require("../tools/autocomplete");
 module.exports = {
     name: 'remove_field_embed',
     description: "Supprime un champ d'un Embed",
+    group: "Embed",
     options: [
         {
             name: 'embed_name',

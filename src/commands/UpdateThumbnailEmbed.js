@@ -5,6 +5,7 @@ const { sendAutocomplete } = require("../tools/autocomplete");
 module.exports = {
     name: "update_thumnail_embed",
     description: "Modifie le Thumbnail de l'Embed",
+    group: "Embed",
     options: [
         {
             name: 'embed_name',

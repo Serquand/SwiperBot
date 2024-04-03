@@ -4,6 +4,7 @@ const { getAllSwipersTemplate } = require("../services/Swiper");
 module.exports = {
     name: 'list_swiper',
     description: "Liste les swipers",
+    group: 'Swiper',
     /**
      *
      * @param {Client} client

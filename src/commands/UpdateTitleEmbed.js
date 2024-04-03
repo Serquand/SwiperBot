@@ -6,6 +6,7 @@ const { sendAutocomplete } = require("../tools/autocomplete");
 module.exports = {
     name: 'update_title_embed',
     description: "Modifie le titre d'un Embed",
+    group: "Embed",
     options: [
         {
             name: 'embed_name',

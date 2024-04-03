@@ -5,6 +5,7 @@ const { sendAutocomplete } = require("../tools/autocomplete");
 module.exports = {
     name: "delete_embed",
     description: "Supprime un Embed",
+    group: "Embed",
     options: [
         {
             name: 'embed_name',

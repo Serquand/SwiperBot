@@ -5,6 +5,7 @@ const { sendAutocomplete } = require("../tools/autocomplete");
 module.exports = {
     name: 'show_swiper_image',
     description: "Affiche une image d'un swiper",
+    group: 'Swiper',
     options: [
         {
             name: 'swiper_name',

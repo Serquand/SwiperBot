@@ -6,6 +6,7 @@ const { sendAutocomplete } = require("../tools/autocomplete");
 module.exports = {
     name: 'update_description_embed',
     description: "Modifie la description d'un Embed",
+    group: "Embed",
     options: [
         {
             name: 'embed_name',

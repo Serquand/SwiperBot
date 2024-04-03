@@ -7,6 +7,7 @@ const { sendAutocomplete } = require('../tools/autocomplete');
 module.exports = {
     name: "udpate_author_embed",
     description: 'Modifier l\'auteur d\'un embed',
+    group: "Embed",
     options: [
         {
             name: 'embed_name',

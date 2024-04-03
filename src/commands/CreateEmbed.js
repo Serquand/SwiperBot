@@ -6,6 +6,7 @@ const { sendAutocomplete } = require("../tools/autocomplete");
 module.exports = {
     name: 'create_embed',
     description: "Créer un nouvel Embed",
+    group: "Embed",
     options: [
         {
             name: "name",

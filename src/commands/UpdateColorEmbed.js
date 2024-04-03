@@ -6,6 +6,7 @@ const { sendAutocomplete } = require("../tools/autocomplete");
 module.exports = {
     name: "update_color_embed",
     description: "Modifie la couleur d'un Embed",
+    group: "Embed",
     options: [
         {
             name: 'embed_name',

@@ -248,6 +248,98 @@ const EmbedInChannel = (sequelize, Sequelize) => {
     })
 }
 
+/**
+ * @param {Sequelize} sequelize
+ * @param {SequelizeCore} Sequelize
+ * @returns {Model}
+ */
+const SelectMenu = (sequelize, Sequelize) => {
+    return sequelize.define('SelectMenu', {
+        uid: {
+            type: Sequelize.UUID,
+            defaultValue: Sequelize.UUIDV4,
+            primaryKey: true,
+        },
+
+        name: {
+            type: Sequelize.STRING,
+            allowNull: false,
+            unique: true,
+        },
+
+        description: {
+            type: Sequelize.STRING,
+            allowNull: false,
+        },
+
+        placeholder: {
+            type: Sequelize.STRING(50),
+            allowNull: false,
+        }
+    });
+}
+
+/**
+ * @param {Sequelize} sequelize
+ * @param {SequelizeCore} Sequelize
+ * @returns {Model}
+ */
+const SelectMenuOption = (sequelize, Sequelize) => {
+    return sequelize.define('SelectMenuOption', {
+        uid: {
+            type: Sequelize.UUID,
+            defaultValue: Sequelize.UUIDV4,
+            primaryKey: true,
+        },
+
+        linkedTo: {
+            type: Sequelize.UUID,
+            references: {
+                model: SelectMenu(sequelize, Sequelize),
+                key: 'uid'
+            }
+        },
+
+        label: {
+            type: Sequelize.STRING(24),
+            allowNull: false,
+        },
+
+        value: {
+            type: Sequelize.STRING,
+            allowNull: false,
+        },
+
+        description: {
+            type: Sequelize.STRING(49),
+            allowNull: false,
+        },
+    })
+}
+
+/**
+ * @param {Sequelize} sequelize
+ * @param {SequelizeCore} Sequelize
+ * @returns {Model}
+ */
+const SelectMenuInChannel = (sequelize, Sequelize) => {
+    return sequelize.define('SelectMenuInChannel', {
+        uid: {
+            type: Sequelize.UUID,
+            defaultValue: Sequelize.UUIDV4,
+            primaryKey: true,
+        },
+
+        linkedTo: {
+            type: Sequelize.UUID,
+            references: {
+                model: SelectMenu(sequelize, Sequelize),
+                key: 'uid'
+            }
+        },
+    })
+}
+
 module.exports = {
     Swiper,
     SwiperImage,
@@ -255,4 +347,7 @@ module.exports = {
     Embed,
     EmbedField,
     EmbedInChannel,
+    SelectMenu,
+    SelectMenuOption,
+    SelectMenuInChannel,
 }

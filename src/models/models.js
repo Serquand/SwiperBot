@@ -300,18 +300,21 @@ const SelectMenuOption = (sequelize, Sequelize) => {
             }
         },
 
-        label: {
-            type: Sequelize.STRING(24),
-            allowNull: false,
+        needToSend: {
+            type: Sequelize.UUID,
+            references: {
+                model: Embed(sequelize, Sequelize),
+                key: 'uid'
+            }
         },
 
-        value: {
-            type: Sequelize.STRING,
+        label: {
+            type: Sequelize.STRING(25),
             allowNull: false,
         },
 
         description: {
-            type: Sequelize.STRING(49),
+            type: Sequelize.STRING(50),
             allowNull: false,
         },
     })
@@ -337,6 +340,17 @@ const SelectMenuInChannel = (sequelize, Sequelize) => {
                 key: 'uid'
             }
         },
+
+        channelId: {
+            type: Sequelize.STRING(25),
+            allowNull: false,
+        },
+
+        messageId: {
+            type: Sequelize.STRING(25),
+            allowNull: false,
+            unique: true,
+        }
     })
 }
 

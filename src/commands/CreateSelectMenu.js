@@ -1,8 +1,10 @@
 const { Client, CommandInteraction } = require("discord.js");
-const { getSelectMenuByName } = require("../services/SelectMenu");
+const { getSelectMenuByName, createSelectMenu } = require("../services/SelectMenu");
+const { sendBadInteraction } = require("../tools/discord");
 
 module.exports = {
     name: 'create_select_menu',
+    description: 'Crée un Select Menu',
     group: 'Select Menu',
     options: [
         {
@@ -29,7 +31,7 @@ module.exports = {
      * @param {Client} client
      * @param {CommandInteraction} interaction
      */
-    runSlash: (client, interaction) => {
+    runSlash: async (client, interaction) => {
         const selectMenuName = interaction.options.getString('select_menu_name');
         const selectMenuDescription = interaction.options.getString('select_menu_description');
         const selectMenuTitle = interaction.options.getString('select_menu_title');
@@ -64,6 +66,15 @@ module.exports = {
                 content: "Le titre est trop long. Limite : 50 caractères.",
                 ephemeral: true,
             });
+        }
+
+        try {
+            if (await createSelectMenu(selectMenuName, selectMenuDescription, selectMenuTitle))
+                sendBadInteraction(interaction, "Le Select Menu a bien été créé");
+            else sendBadInteraction(interaction);
+        } catch (error) {
+            console.error(error);
+            return sendBadInteraction(interaction);
         }
     }
 }

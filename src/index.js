@@ -6,6 +6,7 @@ const { eventHandler, commandHandler } = require('./tools/handlers.js');
 const db = require('./models');
 const { getAllSwipers, initializeSwiper } = require('./services/Swiper.js');
 const { initializeAllEmbeds, getListEmbed } = require('./services/Embed.js');
+const { initializeSelectMenu } = require('./services/SelectMenu.js');
 
 const initializeTurnOver = (client) => {
     setInterval(() => {
@@ -32,6 +33,7 @@ const main = async () => {
         await db.sequelize.sync();
         await initializeSwiper();
         await initializeAllEmbeds();
+        await initializeSelectMenu();
         initializeTurnOver(client);
         console.log('Everything initialized !');
     }, process.env.MODE === 'dev' ? 1_000 : 10_000);

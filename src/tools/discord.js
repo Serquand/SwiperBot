@@ -1,4 +1,4 @@
-const { Client, Message, Guild, Channel, TextChannel } = require("discord.js");
+const { Client, Message, Guild, Channel, TextChannel, Interaction } = require("discord.js");
 
 /**
  *
@@ -56,9 +56,18 @@ async function fetchMessageById (client, channelId, messageId) {
     }
 }
 
+/**
+ *
+ * @param {Interaction} interaction
+ */
+function sendBadInteraction (interaction, error) {
+    interaction.isRepliable() && interaction.reply({ content: error ||  "Something bad happened", ephemeral: true });
+}
+
 module.exports = {
     fetchMessageById,
     getTheGuild,
     getTheChannel,
     getTheMessage,
+    sendBadInteraction
 }

@@ -55,6 +55,10 @@ class SelectMenu {
         }
     }
 
+    selectMenuHaAlreadyTheEmbed(embedUid) {
+        return this.options.filter(option => option.needToSend === embedUid).length > 0;
+    }
+
     update(key, value) {
         this[key] = value;
     }

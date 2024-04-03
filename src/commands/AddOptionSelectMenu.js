@@ -58,6 +58,9 @@ module.exports = {
         // Check if the option exists
         if(selectMenu.getOptionByLabel(optionLabel)) return sendBadInteraction(interaction, "Une option avec ce label existe déjà dans ce Select Menu !");
 
+        // Check if the value exists
+        if(selectMenu.selectMenuHaAlreadyTheEmbed(embed.uid)) return sendBadInteraction(interaction, "Une option avec cet Embed existe déjà dans ce Select Menu !");
+
         // Check the length of the option label
         if(optionLabel.length > 25) return sendBadInteraction(interaction, "Le label est trop long. Longueur maximale : 25 caracteres");
 

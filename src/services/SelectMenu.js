@@ -136,7 +136,27 @@ async function createSelectMenu(name, description, placeholder) {
 }
 
 async function initializeSelectMenu() {
+    const [allSelectMenus, allSelectMenuInChannels, allSelectMenuOptions] = await Promise.all([
+        ModelSelectMenu.findAll({ raw: true }),
+        ModelSelectMenuInChannel.findAll({ raw: true }),
+        ModelSelectMenuOption.findAll({ raw: true }),
+    ]);
+    allSelectMenus.forEach(sm => {
+        const listOptionAssigned = allSelectMenuOptions
+            .filter(option => option.linkedTo === sm.uid)
+            .map(option => ({
+                needToSend: option.needToSend,
+                linkedTo: option.linkedTo,
+                label: option.label,
+                description: option.description
+            }));
+        const newSelectMenu = new SelectMenu(sm.name, sm.description, sm.uid, sm.placeholder, listOptionAssigned);
+        listOfSelectMenu.push(newSelectMenu);
+    });
 
+    allSelectMenuInChannels.forEach(inChannel => {
+        listOfSelectMenuInChannel.push(new SelectMenuInChannel(inChannel.channelId, inChannel.messageId, inChannel.linkedTo));
+    })
 }
 
 module.exports = {

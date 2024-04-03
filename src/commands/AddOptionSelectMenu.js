@@ -62,7 +62,7 @@ module.exports = {
         if(optionLabel.length > 25) return sendBadInteraction(interaction, "Le label est trop long. Longueur maximale : 25 caracteres");
 
         // Check the length of the option description
-        if(optionDescription.length > 50) return sendBadInteraction(interaction, "La description est trop longue. Longueur maximale : 50 caracteres");
+        if(optionDescription && optionDescription.length > 50) return sendBadInteraction(interaction, "La description est trop longue. Longueur maximale : 50 caracteres");
 
         try {
             if (await selectMenu.addOption(embed.uid, optionLabel, optionDescription)) return sendBadInteraction(interaction, "L'option a bien été ajouté");

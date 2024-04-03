@@ -315,7 +315,7 @@ const SelectMenuOption = (sequelize, Sequelize) => {
 
         description: {
             type: Sequelize.STRING(50),
-            allowNull: false,
+            allowNull: true,
         },
     })
 }

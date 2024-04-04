@@ -1,4 +1,6 @@
 const { Client, Interaction } = require("discord.js");
+const { sendBadInteraction } = require("../tools/discord");
+const { getSelectMenuInChannelByCustomId } = require("../services/SelectMenu");
 
 module.exports = {
     name: "interactionCreate",
@@ -10,6 +12,13 @@ module.exports = {
      * @returns
      */
     async execute(client, interaction) {
+        if(interaction.type === 'MESSAGE_COMPONENT') {
+            if(interaction.isSelectMenu()) {
+                const selectMenu = getSelectMenuInChannelByCustomId(interaction.customId);
+                if (selectMenu === undefined) return sendBadInteraction(interaction);
+                return selectMenu.respondToInteraction(interaction, client);
+            }
+        }
         if(interaction.isCommand()) {
             const cmd = client.commands.get(interaction.commandName);
             if(!cmd) {

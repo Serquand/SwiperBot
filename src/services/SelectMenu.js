@@ -1,5 +1,8 @@
+const { v4 } = require('uuid');
 const { SelectMenu: ModelSelectMenu, SelectMenuInChannel: ModelSelectMenuInChannel, SelectMenuOption: ModelSelectMenuOption } = require('../models');
-const { MessageSelectMenu, TextChannel, MessageActionRow } = require('discord.js');
+const { MessageSelectMenu, TextChannel, MessageActionRow, MessageComponentInteraction, Message } = require('discord.js');
+const { getEmbedByUid } = require('./Embed');
+const { sendBadInteraction, fetchMessageById } = require('../tools/discord');
 
 /**
  * @typedef SelectMenuOption
@@ -17,10 +20,33 @@ let listOfSelectMenu = [];
 let listOfSelectMenuInChannel = [];
 
 class SelectMenuInChannel {
-    constructor (channelId, messageId, linkedTo) {
+    constructor (channelId, messageId, linkedTo, customId) {
         this.channelId = channelId;
         this.messageId = messageId;
         this.linkedTo = linkedTo;
+        this.customId = customId;
+    }
+
+    /**
+     *
+     * @param {MessageComponentInteraction} interaction
+     */
+    async respondToInteraction(interaction, client) {
+        try {
+            // Generate and send Embed
+            const embed = getEmbedByUid(interaction.values[0]);
+            if(!embed) return sendBadInteraction(interaction);
+            interaction.reply({
+                embeds: [embed.generateEmbed()],
+                ephemeral: true
+            });
+        } finally {
+            // Update
+            const selectMenu = getSelectMenuByUid(this.linkedTo);
+            const components = [new MessageActionRow().addComponents(selectMenu.generateSelectMenu(this.customId))];
+            const message = await fetchMessageById(client, this.channelId, this.messageId);
+            message.edit({ components });
+        }
     }
 }
 
@@ -83,13 +109,11 @@ class SelectMenu {
 
     }
 
-
-
-    generateSelectMenu () {
+    generateSelectMenu (customId) {
         const optionsToSend = this.options.map((option) => ({ label: option.label, value: option.needToSend, description: option.description }));
         return new MessageSelectMenu()
             .setOptions(...optionsToSend)
-            .setCustomId(this.selectMenuUid)
+            .setCustomId(customId)
             .setPlaceholder(this.placeholder)
     }
 }
@@ -102,10 +126,11 @@ class SelectMenu {
  */
 async function sendASelectMenu(selectMenu, channel) {
     try {
-        const component = new MessageActionRow().addComponents(selectMenu.generateSelectMenu());
+        const customId = v4();
+        const component = new MessageActionRow().addComponents(selectMenu.generateSelectMenu(customId));
         const message = await channel.send({ components: [component] });
-        await ModelSelectMenuInChannel.create({ linkedTo: selectMenu.selectMenuUid, channelId: channel.id, messageId: message.id });
-        listOfSelectMenuInChannel.push(new SelectMenuInChannel(channel.id, message.id, selectMenu.selectMenuUid));
+        await ModelSelectMenuInChannel.create({ linkedTo: selectMenu.selectMenuUid, channelId: channel.id, messageId: message.id, uid: customId });
+        listOfSelectMenuInChannel.push(new SelectMenuInChannel(channel.id, message.id, selectMenu.selectMenuUid, customId));
         return true;
     } catch (error) {
         console.error(error);
@@ -146,6 +171,24 @@ async function createSelectMenu(name, description, placeholder) {
     }
 }
 
+/**
+ *
+ * @param {SelectMenuInChannel | undefined} customId
+ * @returns
+ */
+function getSelectMenuInChannelByCustomId (customId) {
+    return listOfSelectMenuInChannel.find(sm => sm.customId === customId);
+}
+
+/**
+ *
+ * @param {String} uid
+ * @returns {SelectMenu | undefined}
+ */
+function getSelectMenuByUid(uid) {
+    return listOfSelectMenu.find(sm => sm.selectMenuUid === uid);
+}
+
 async function initializeSelectMenu() {
     const [allSelectMenus, allSelectMenuInChannels, allSelectMenuOptions] = await Promise.all([
         ModelSelectMenu.findAll({ raw: true }),
@@ -166,7 +209,7 @@ async function initializeSelectMenu() {
     });
 
     allSelectMenuInChannels.forEach(inChannel => {
-        listOfSelectMenuInChannel.push(new SelectMenuInChannel(inChannel.channelId, inChannel.messageId, inChannel.linkedTo));
+        listOfSelectMenuInChannel.push(new SelectMenuInChannel(inChannel.channelId, inChannel.messageId, inChannel.linkedTo, inChannel.uid));
     })
 }
 
@@ -177,4 +220,6 @@ module.exports = {
     sendASelectMenu,
     createSelectMenu,
     initializeSelectMenu,
+    getSelectMenuInChannelByCustomId,
+    getSelectMenuByUid
 }

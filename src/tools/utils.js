@@ -33,7 +33,7 @@ async function isGoodEmoji (channel, emoji) {
             .addComponents(new MessageSelectMenu()
                 .setOptions({ label: 'Test', value: 'Test', emoji })
                 .setCustomId('customId')
-                .setPlaceholder('this.placeholder')
+                .setPlaceholder('Test')
             )
 
         const message = await channel.send({ components: [component] });

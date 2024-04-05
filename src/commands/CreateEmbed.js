@@ -38,7 +38,6 @@ module.exports = {
             type: "STRING",
             required: false,
             description: "L'URL de l'image à ajouter dans l'Embed",
-            autocomplete: true
         },
         {
             name: "embed_author_name",
@@ -80,7 +79,7 @@ module.exports = {
         const name = interaction.options.getString('name');
         const embedTitle = interaction.options.getString('embed_title');
         const embedDescription = interaction.options.getString('embed_description');
-        const embedSwiper = interaction.options.getString('embed_swiper');
+        const embedSwiper = interaction.options.getString('embed_swiper_name');
         const embedAuthorName = interaction.options.getString('embed_author_name');
         const embedAuthorIconUrl = interaction.options.getString('embed_author_icon_url');
         const embedAuthorUrl = interaction.options.getString('embed_author_url');
@@ -131,7 +130,7 @@ module.exports = {
 
         // Add the Embed
         try {
-            const result = await addEmbed(color, embedAuthorIconUrl, embedAuthorUrl, embedAuthorName, embedTitle, embedDescription, embedImageUrl, embedThumbnailUrl, name, interaction.channel, swiper);
+            const result = await addEmbed(color, embedAuthorIconUrl, embedAuthorUrl, embedAuthorName, embedTitle, embedDescription, embedImageUrl, embedThumbnailUrl, name, swiper);
             if(result) {
                 return interaction.reply({
                     content: "L'Embed a bien été créé !",

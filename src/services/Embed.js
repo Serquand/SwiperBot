@@ -169,7 +169,7 @@ class Embed {
 
 async function addEmbed(color, authorIconUrl, authorUrl, authorName, title, description, imageUrl, thumbnailUrl, name, swiper) {
     try {
-        const swiperUid = swiper?.uid ?? null;
+        const swiperUid = swiper?.swiperUid ?? null;
         const { dataValues: data } = await ModelEmbed.create({ name, title, authorName, authorIconUrl, authorUrl, color, description, imageUrl, thumbnailUrl, swiperUid });
         const author = { name: authorName, url: authorUrl, iconUrl: authorIconUrl };
         listEmbed.push(new Embed(color, author, title, description, imageUrl, thumbnailUrl, name, [], data.uid, [], swiperUid));

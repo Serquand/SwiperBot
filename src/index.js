@@ -1,5 +1,6 @@
 const dotenv = require('dotenv');
-dotenv.config();
+const NODE_ENV = process.env.NODE_ENV || 'dev';
+dotenv.config({ path: NODE_ENV === 'prod' ? '.env' : `.env.local` });
 
 const { Client, Collection } = require('discord.js');
 const { eventHandler, commandHandler } = require('./tools/handlers.js');
@@ -36,7 +37,7 @@ const main = async () => {
         await initializeSelectMenu();
         initializeTurnOver(client);
         console.log('Everything initialized !');
-    }, process.env.MODE === 'dev' ? 1_000 : 10_000);
+    }, process.env.NODE_ENV === 'dev' ? 1_000 : 10_000);
 }
 
 main();

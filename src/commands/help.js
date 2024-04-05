@@ -20,6 +20,7 @@ module.exports = {
 
             (await getAllFilesFromDirectory(`${process.cwd()}/src/commands/*.js`)).map(commandFile => {
                 const command = require(commandFile);
+                if(command.isDisabled) return;
                 const group = command.group ?? 'Non rattaché à un groupe';
                 const commandId = cachedCommandInformations[command.name];
                 const newCommandObject = { name: command.name, id: commandId };

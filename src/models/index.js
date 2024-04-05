@@ -2,12 +2,12 @@ const dbConfig = require("../config/db.config.js");
 const Sequelize = require("sequelize");
 const bases = require('./models.js');
 
-const PORT = process.env.MODE === 'prod' && dbConfig.PORT ? dbConfig.PORT : undefined;
+const PORT = process.env.NODE_ENV === 'prod' && dbConfig.PORT ? dbConfig.PORT : undefined;
 const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
     host: dbConfig.HOST,
     dialect: dbConfig.DIALECT,
     port: PORT,
-    logging: process.env.MODE === 'prod',
+    logging: process.env.NODE_ENV === 'prod',
     pool: {
         max: dbConfig.pool.max,
         min: dbConfig.pool.min,

@@ -48,7 +48,12 @@ class EmbedInChannel {
         const newImageUrl = this.getNextImageUrl();
         const newEmbed = this.embed.generateEmbed().setImage(newImageUrl);
         const message = await fetchMessageById(client, this.channelId, this.messageId);
-        message.edit({ embeds: [newEmbed] });
+        // TODO: Revenir là-dessus pour améliorer la logique de suppression
+        if(message) {
+            message.edit({ embeds: [newEmbed] });
+        } else {
+            // Supprimer l'Embed in channel
+        }
     }
 }
 

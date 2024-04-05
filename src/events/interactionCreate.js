@@ -1,6 +1,7 @@
 const { Client, Interaction } = require("discord.js");
 const { sendBadInteraction } = require("../tools/discord");
 const { getSelectMenuInChannelByCustomId } = require("../services/SelectMenu");
+const { getEmbedInteractManager } = require("../services/EmbedInteract");
 
 module.exports = {
     name: "interactionCreate",
@@ -17,6 +18,13 @@ module.exports = {
                 const selectMenu = getSelectMenuInChannelByCustomId(interaction.customId);
                 if (selectMenu === undefined) return sendBadInteraction(interaction);
                 return selectMenu.respondToInteraction(interaction, client);
+            } else if (interaction.isButton()) {
+                const interactionManager = getEmbedInteractManager();
+                if (!interactionManager || Object.values(interactionManager.allInteractions).length === 0) {
+                    return sendBadInteraction(interaction);
+                } else {
+                    return interactionManager.handleInteraction(interaction);
+                }
             }
         }
         if(interaction.isCommand()) {

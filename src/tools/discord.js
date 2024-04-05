@@ -1,4 +1,4 @@
-const { Client, Message, Guild, Channel, TextChannel, Interaction } = require("discord.js");
+const { Client, Message, Guild, Channel, TextChannel, Interaction, MessageActionRow, MessageButton } = require("discord.js");
 
 /**
  *
@@ -64,10 +64,32 @@ function sendBadInteraction (interaction, error) {
     interaction.isRepliable() && interaction.reply({ content: error ||  "Something bad happened", ephemeral: true });
 }
 
+/**
+ *
+ * @param {String} customId
+ * @returns {MessageActionRow}
+ */
+function generateButtonToSwitchSwiperImage (customId) {
+    const nextButton = new MessageButton()
+        .setCustomId(customId + '+next')
+        .setEmoji("⏭️")
+        .setLabel('Next image')
+        .setStyle('PRIMARY')
+
+    const previousButton = new MessageButton()
+        .setCustomId(customId + '+previous')
+        .setEmoji('⏮️')
+        .setLabel('Previous image')
+        .setStyle('PRIMARY')
+
+    return new MessageActionRow().addComponents(previousButton, nextButton);
+}
+
 module.exports = {
     fetchMessageById,
     getTheGuild,
     getTheChannel,
     getTheMessage,
-    sendBadInteraction
+    sendBadInteraction,
+    generateButtonToSwitchSwiperImage
 }

@@ -2,7 +2,8 @@ const { v4 } = require('uuid');
 const { SelectMenu: ModelSelectMenu, SelectMenuInChannel: ModelSelectMenuInChannel, SelectMenuOption: ModelSelectMenuOption } = require('../models');
 const { MessageSelectMenu, TextChannel, MessageActionRow, MessageComponentInteraction, Message } = require('discord.js');
 const { getEmbedByUid } = require('./Embed');
-const { sendBadInteraction, fetchMessageById } = require('../tools/discord');
+const { sendBadInteraction, fetchMessageById, generateButtonToSwitchSwiperImage } = require('../tools/discord');
+const { getEmbedInteractManager } = require('./EmbedInteract');
 
 /**
  * @typedef SelectMenuOption
@@ -34,14 +35,18 @@ class SelectMenuInChannel {
     async respondToInteraction(interaction, client) {
         try {
             // Generate and send Embed
+            this.customId = v4();
             const embed = getEmbedByUid(interaction.values[0]);
             if(!embed) return sendBadInteraction(interaction);
             interaction.reply({
                 embeds: [embed.generateEmbed()],
-                ephemeral: true
+                ephemeral: true,
+                components: embed.hasSwiper ? [generateButtonToSwitchSwiperImage(this.customId)] : undefined,
             });
+            const interactionManager = getEmbedInteractManager();
+            interactionManager.addEmbedInteract(this.customId, interaction.values[0], interaction);
         } finally {
-            // Update
+            // Update the initial message
             const selectMenu = getSelectMenuByUid(this.linkedTo);
             const components = [new MessageActionRow().addComponents(selectMenu.generateSelectMenu(this.customId))];
             const message = await fetchMessageById(client, this.channelId, this.messageId);

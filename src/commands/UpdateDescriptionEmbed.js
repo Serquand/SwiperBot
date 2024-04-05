@@ -7,6 +7,7 @@ module.exports = {
     name: 'update_description_embed',
     description: "Modifie la description d'un Embed",
     group: "Embed",
+    isDisabled: true,
     options: [
         {
             name: 'embed_name',

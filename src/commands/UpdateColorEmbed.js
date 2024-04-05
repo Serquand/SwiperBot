@@ -7,6 +7,7 @@ module.exports = {
     name: "update_color_embed",
     description: "Modifie la couleur d'un Embed",
     group: "Embed",
+    isDisabled: true,
     options: [
         {
             name: 'embed_name',

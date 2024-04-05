@@ -297,7 +297,8 @@ const SelectMenuOption = (sequelize, Sequelize) => {
             references: {
                 model: SelectMenu(sequelize, Sequelize),
                 key: 'uid'
-            }
+            },
+            onDelete: "CASCADE",
         },
 
         needToSend: {
@@ -337,8 +338,9 @@ const SelectMenuInChannel = (sequelize, Sequelize) => {
             type: Sequelize.UUID,
             references: {
                 model: SelectMenu(sequelize, Sequelize),
-                key: 'uid'
-            }
+                key: 'uid',
+            },
+            onDelete: "CASCADE",
         },
 
         channelId: {

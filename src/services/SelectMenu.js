@@ -18,6 +18,10 @@ const { getEmbedInteractManager } = require('./EmbedInteract');
  * @type {Array<SelectMenu>}
  */
 let listOfSelectMenu = [];
+
+/**
+ * @type {Array<SelectMenuInChannel>}
+ */
 let listOfSelectMenuInChannel = [];
 
 class SelectMenuInChannel {
@@ -215,7 +219,20 @@ async function initializeSelectMenu() {
 
     allSelectMenuInChannels.forEach(inChannel => {
         listOfSelectMenuInChannel.push(new SelectMenuInChannel(inChannel.channelId, inChannel.messageId, inChannel.linkedTo, inChannel.uid));
-    })
+    });
+}
+
+/**
+ *
+ * @returns {Array<SelectMenuInChannel>}
+ */
+function getListOfSelectMenuInChannel() {
+    return listOfSelectMenuInChannel;
+}
+
+function deleteAllSelectMenuByUid(uid) {
+    listOfSelectMenu = listOfSelectMenu.filter(sm => sm.selectMenuUid !== uid);
+    listOfSelectMenuInChannel = listOfSelectMenuInChannel.filter(sm => sm.linkedTo !== uid);
 }
 
 module.exports = {
@@ -226,5 +243,7 @@ module.exports = {
     createSelectMenu,
     initializeSelectMenu,
     getSelectMenuInChannelByCustomId,
-    getSelectMenuByUid
+    getSelectMenuByUid,
+    getListOfSelectMenuInChannel,
+    deleteAllSelectMenuByUid
 }

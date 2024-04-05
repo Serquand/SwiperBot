@@ -166,7 +166,22 @@ const Embed = (sequelize, Sequelize) => {
         thumbnailUrl: {
             type: Sequelize.TEXT,
             required: false,
-        }
+        },
+
+        footerTitle: {
+            type: Sequelize.STRING,
+            required: false,
+        },
+
+        footerIconUrl: {
+            type: Sequelize.TEXT,
+            required: false,
+        },
+
+        embedUrl: {
+            type: Sequelize.TEXT,
+            required: false,
+        },
     })
 }
 

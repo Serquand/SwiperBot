@@ -2,6 +2,7 @@ const { Client, Interaction } = require("discord.js");
 const { sendBadInteraction } = require("../tools/discord");
 const { getSelectMenuInChannelByCustomId } = require("../services/SelectMenu");
 const { getEmbedInteractManager } = require("../services/EmbedInteract");
+const { getEmbedUpdaterManager } = require("../services/EmbedUpdater");
 
 module.exports = {
     name: "interactionCreate",
@@ -19,15 +20,18 @@ module.exports = {
                 if (selectMenu === undefined) return sendBadInteraction(interaction);
                 return selectMenu.respondToInteraction(interaction, client);
             } else if (interaction.isButton()) {
-                const interactionManager = getEmbedInteractManager();
-                if (!interactionManager || Object.values(interactionManager.allInteractions).length === 0) {
-                    return sendBadInteraction(interaction);
+                if(interaction.customId.startsWith('embed')) {
+                    return getEmbedUpdaterManager().handleInteraction(interaction);
                 } else {
-                    return interactionManager.handleInteraction(interaction);
+                    const interactionManager = getEmbedInteractManager();
+                    if (!interactionManager || Object.values(interactionManager.allInteractions).length === 0) {
+                        return sendBadInteraction(interaction);
+                    } else {
+                        return interactionManager.handleInteraction(interaction);
+                    }
                 }
             }
-        }
-        if(interaction.isCommand()) {
+        } else if(interaction.isCommand()) {
             const cmd = client.commands.get(interaction.commandName);
             if(!cmd) {
                 return interaction.reply({
@@ -36,9 +40,7 @@ module.exports = {
                 });
             }
             cmd.runSlash(client, interaction);
-        }
-
-        if(interaction.isAutocomplete()) {
+        } else if(interaction.isAutocomplete()) {
             const command = client.commands.get(interaction.commandName);
             try {
                 if (!command) {
@@ -48,6 +50,10 @@ module.exports = {
             } catch (error) {
                 console.error(error);
             }
+        } else if (interaction.isModalSubmit()) {
+            console.log(interaction.customId);
+            console.log(interaction);
+            return interaction.reply('Working on that')
         }
     }
 }

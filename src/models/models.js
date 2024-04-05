@@ -318,6 +318,11 @@ const SelectMenuOption = (sequelize, Sequelize) => {
             type: Sequelize.STRING(50),
             allowNull: true,
         },
+
+        emoji: {
+            type: Sequelize.STRING,
+            allowNull: true,
+        }
     })
 }
 

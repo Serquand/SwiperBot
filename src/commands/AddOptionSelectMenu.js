@@ -3,6 +3,7 @@ const { sendAutocomplete } = require("../tools/autocomplete");
 const { getListSelectMenu, getSelectMenuByName } = require("../services/SelectMenu");
 const { getListEmbed, getEmbedByName } = require("../services/Embed");
 const { sendBadInteraction } = require("../tools/discord");
+const { isGoodEmoji } = require("../tools/utils");
 
 module.exports = {
     name: 'add_option_select_menu',
@@ -34,6 +35,12 @@ module.exports = {
             type: "STRING",
             required: false,
             description: "La description de l'option"
+        },
+        {
+            name: 'option_emoji',
+            type: "STRING",
+            required: false,
+            description: "L'emoji de l'option à envoyer"
         }
     ],
     /**
@@ -45,6 +52,7 @@ module.exports = {
         const selectMenuName = interaction.options.getString('select_menu_name');
         const optionLabel = interaction.options.getString('option_label');
         const embedName = interaction.options.getString('embed_name');
+        const optionEmoji = interaction.options.getString('option_emoji');
         const optionDescription = interaction.options.getString('option_description');
 
         // Check if the menu exists
@@ -67,9 +75,17 @@ module.exports = {
         // Check the length of the option description
         if(optionDescription && optionDescription.length > 50) return sendBadInteraction(interaction, "La description est trop longue. Longueur maximale : 50 caracteres");
 
+        if(optionEmoji) {
+            const isValidEmoji = await isGoodEmoji(interaction.channel, optionEmoji);
+            if(!isValidEmoji) return sendBadInteraction(interaction, "L'emoji n'est pas valide !");
+        }
+
         try {
-            if (await selectMenu.addOption(embed.uid, optionLabel, optionDescription)) return sendBadInteraction(interaction, "L'option a bien été ajouté");
-            else return sendBadInteraction(interaction);
+            if (await selectMenu.addOption(embed.uid, optionLabel, optionDescription, optionEmoji)) {
+                return sendBadInteraction(interaction, "L'option a bien été ajouté");
+            } else {
+                return sendBadInteraction(interaction);
+            }
         } catch (error) {
             console.error(error);
             return sendBadInteraction();

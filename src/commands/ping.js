@@ -1,5 +1,3 @@
-const { MessageSelectMenu, MessageActionRow} = require('discord.js');
-
 module.exports = {
     name: 'ping',
     description: 'Reply with Pong !',

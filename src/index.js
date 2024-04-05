@@ -1,7 +1,7 @@
 const dotenv = require('dotenv');
 dotenv.config();
 
-const { Client, Collection, MessageEmbed } = require('discord.js');
+const { Client, Collection } = require('discord.js');
 const { eventHandler, commandHandler } = require('./tools/handlers.js');
 const db = require('./models');
 const { getAllSwipers, initializeSwiper } = require('./services/Swiper.js');

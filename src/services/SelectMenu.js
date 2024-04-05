@@ -12,6 +12,7 @@ const { getEmbedInteractManager } = require('./EmbedInteract');
  * @property {string} linkedTo - The Select Menu link
  * @property {string} label - The label of the option
  * @property {string} description - The description of the option
+ * * @property {string} emoji - The emoji of the option
  */
 
 /**
@@ -76,13 +77,14 @@ class SelectMenu {
      * @param {String} needToSend
      * @param {String} label
      * @param {String} description
+     * @param {String} emoji
      * @returns {Promise<boolean>}
      */
-    async addOption(needToSend, label, description) {
+    async addOption(needToSend, label, description, emoji) {
         try {
-            await ModelSelectMenuOption.create({ description, label, needToSend, linkedTo: this.selectMenuUid });
+            await ModelSelectMenuOption.create({ description, label, needToSend, linkedTo: this.selectMenuUid, emoji });
             await this.synchronize();
-            this.options.push({ description, label, needToSend, linkedTo: this.selectMenuUid });
+            this.options.push({ description, label, needToSend, linkedTo: this.selectMenuUid, emoji });
             return true;
         } catch (e) {
             console.error(e);
@@ -119,7 +121,12 @@ class SelectMenu {
     }
 
     generateSelectMenu (customId) {
-        const optionsToSend = this.options.map((option) => ({ label: option.label, value: option.needToSend, description: option.description }));
+        const optionsToSend = this.options.map((option) => ({
+            label: option.label,
+            value: option.needToSend,
+            description: option.description,
+            emoji: option.emoji,
+        }));
         return new MessageSelectMenu()
             .setOptions(...optionsToSend)
             .setCustomId(customId)
@@ -211,7 +218,8 @@ async function initializeSelectMenu() {
                 needToSend: option.needToSend,
                 linkedTo: option.linkedTo,
                 label: option.label,
-                description: option.description
+                description: option.description,
+                emoji: option.emoji
             }));
         const newSelectMenu = new SelectMenu(sm.name, sm.description, sm.uid, sm.placeholder, listOptionAssigned);
         listOfSelectMenu.push(newSelectMenu);

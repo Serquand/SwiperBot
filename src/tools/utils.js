@@ -1,5 +1,6 @@
 const { promisify } = require("util");
 const { glob } = require("glob");
+const { MessageSelectMenu, MessageActionRow } = require('discord.js');
 
 /**
  *
@@ -20,8 +21,32 @@ const getPreviousIndex = (currentIndex, length) => {
     return currentIndex - 1;
 }
 
+/**
+ *
+ * @param {Channel} channel
+ * @param {String} emoji
+ * @returns {Promise<boolean>}
+ */
+async function isGoodEmoji (channel, emoji) {
+    try {
+        const component = new MessageActionRow()
+            .addComponents(new MessageSelectMenu()
+                .setOptions({ label: 'Test', value: 'Test', emoji })
+                .setCustomId('customId')
+                .setPlaceholder('this.placeholder')
+            )
+
+        const message = await channel.send({ components: [component] });
+        await message.delete();
+        return true;
+    } catch {
+        return false;
+    }
+}
+
 module.exports = {
     getAllFilesFromDirectory,
     getNextIndex,
     getPreviousIndex,
+    isGoodEmoji,
 }

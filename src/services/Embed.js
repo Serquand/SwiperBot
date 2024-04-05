@@ -171,7 +171,7 @@ async function addEmbed(color, authorIconUrl, authorUrl, authorName, title, desc
     try {
         const swiperUid = swiper?.swiperUid ?? null;
         const { dataValues: data } = await ModelEmbed.create({ name, title, authorName, authorIconUrl, authorUrl, color, description, imageUrl, thumbnailUrl, swiperUid });
-        const author = { name: authorName, url: authorUrl, iconUrl: authorIconUrl };
+        const author = { name: authorName, url: authorUrl, iconURL: authorIconUrl };
         listEmbed.push(new Embed(color, author, title, description, imageUrl, thumbnailUrl, name, [], data.uid, [], swiperUid));
         return true;
     } catch (error) {
@@ -215,7 +215,7 @@ async function initializeAllEmbeds() {
     ]);
 
     for(const template of embedTemplate) {
-        const author = { iconUrl: template.authorIconUrl, url: template.authorUrl, name: template.authorName };
+        const author = { iconURL: template.authorIconUrl, url: template.authorUrl, name: template.authorName };
 
         const fieldAssigned = embedTemplateField
             .filter(field => field.linkedTo === template.uid)

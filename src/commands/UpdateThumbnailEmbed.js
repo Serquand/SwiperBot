@@ -3,7 +3,7 @@ const { getEmbedByName, getListEmbed } = require("../services/Embed");
 const { sendAutocomplete } = require("../tools/autocomplete");
 
 module.exports = {
-    name: "update_thumnail_embed",
+    name: "update_thumbnail_embed",
     description: "Modifie le Thumbnail de l'Embed",
     group: "Embed",
     isDisabled: true,

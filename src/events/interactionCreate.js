@@ -51,9 +51,7 @@ module.exports = {
                 console.error(error);
             }
         } else if (interaction.isModalSubmit()) {
-            console.log(interaction.customId);
-            console.log(interaction);
-            return interaction.reply('Working on that')
+            return getEmbedUpdaterManager().handleModalSubmission(interaction);
         }
     }
 }

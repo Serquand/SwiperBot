@@ -2,8 +2,6 @@ const { CommandInteraction, Client } = require("discord.js");
 const { getListEmbed, getEmbedByName } = require("../services/Embed");
 const { sendAutocomplete } = require("../tools/autocomplete");
 const { sendBadInteraction, generateButtonToUpdateEmbed } = require("../tools/discord");
-const { v4 } = require("uuid");
-const { getEmbedUpdaterManager } = require("../services/EmbedUpdater");
 
 module.exports = {
     name: 'update_embed',
@@ -28,13 +26,10 @@ module.exports = {
         if(!embed) return sendBadInteraction(interaction, "L'Embed que vous voulez modifier n'a pas été trouvé !");
 
         interaction.reply({
-            content: `Modification de l'Embed ${embed.name}`,
+            content: `Modification de l'Embed ${embed.name}\nSwiper associé à l'Embed : ${embed.swiper?.swiperName ?? 'Aucun'}`,
             components: generateButtonToUpdateEmbed(embed.uid),
             embeds: [embed.generateEmbed()]
         });
-
-        const embedUpdaterManager = getEmbedUpdaterManager();
-        embedUpdaterManager.addEmbedUpdater(embed.uid, interaction, embed.uid);
     },
     autocomplete: interaction => sendAutocomplete(interaction, getListEmbed(), 'name'),
 }

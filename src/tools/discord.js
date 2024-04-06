@@ -90,7 +90,7 @@ function generateButtonToSwitchSwiperImage(customId) {
  * @returns {Array<MessageActionRow>}
  */
 function generateButtonToUpdateEmbed(customId) {
-    const updateThumbnailButton = new MessageButton().setCustomId('embed+' + customId + '+thumnail').setLabel('Modifier le thumbnail').setStyle('PRIMARY');
+    const updateThumbnailButton = new MessageButton().setCustomId('embed+' + customId + '+thumbnail').setLabel('Modifier le thumbnail').setStyle('PRIMARY');
     const updateAuthorButton = new MessageButton().setCustomId('embed+' + customId + '+author').setLabel('Modifier l\'auteur').setStyle('PRIMARY');
     const updateTitleButton = new MessageButton().setCustomId('embed+' + customId + '+title').setLabel('Modifier le titre').setStyle('PRIMARY');
     const updateColorButton = new MessageButton().setCustomId('embed+' + customId + '+color').setLabel('Modifier la couleur').setStyle('PRIMARY');
@@ -114,7 +114,7 @@ function generateButtonToUpdateEmbed(customId) {
 }
 
 function getTextInputForActionUpdateModal(action, customId) {
-    if (action === 'thumnail') {
+    if (action === 'thumbnail') {
         const thumbnailInput = new TextInputComponent()
             .setCustomId(customId + '-thumbnail')
             .setLabel('Thumbnail')
@@ -215,22 +215,22 @@ function getTextInputForActionUpdateModal(action, customId) {
         ];
     } else if (action === 'image') {
         const titleInput = new TextInputComponent()
-            .setCustomId(customId + '-remove-field-name')
+            .setCustomId(customId + '-image')
             .setLabel('Nouvelle image')
             .setRequired(false)
             .setStyle('SHORT')
         return [new MessageActionRow().addComponents(titleInput)];
     } else if (action === 'swiper') {
         const titleInput = new TextInputComponent()
-            .setCustomId(customId + '-remove-field-name')
+            .setCustomId(customId + '-swiper-name')
             .setLabel('Nouveau swiper')
             .setRequired(false)
             .setStyle('SHORT')
         return [new MessageActionRow().addComponents(titleInput)];
     } else if (action === 'url') {
         const titleInput = new TextInputComponent()
-            .setCustomId(customId + '-remove-field-name')
-            .setLabel('Champ à supprimer')
+            .setCustomId(customId + '-url')
+            .setLabel('URL de l\'Embed')
             .setRequired(false)
             .setStyle('SHORT')
         return [new MessageActionRow().addComponents(titleInput)];

@@ -266,6 +266,15 @@ function deleteAllSelectMenuByUid(uid) {
     listOfSelectMenuInChannel = listOfSelectMenuInChannel.filter(sm => sm.linkedTo !== uid);
 }
 
+/**
+ *
+ * @param {String} messageId
+ */
+async function deleteFromSelectMenuInChannel(messageId) {
+    listOfSelectMenuInChannel = listOfSelectMenuInChannel.filter(sm => sm.messageId !== messageId);
+    await ModelSelectMenuInChannel.destroy({ where: { messageId } });
+}
+
 module.exports = {
     SelectMenu,
     getSelectMenuByName,
@@ -276,5 +285,6 @@ module.exports = {
     getSelectMenuInChannelByCustomId,
     getSelectMenuByUid,
     getListOfSelectMenuInChannel,
-    deleteAllSelectMenuByUid
+    deleteAllSelectMenuByUid,
+    deleteFromSelectMenuInChannel
 }

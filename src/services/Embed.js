@@ -48,12 +48,7 @@ class EmbedInChannel {
         const newImageUrl = this.getNextImageUrl();
         const newEmbed = this.embed.generateEmbed().setImage(newImageUrl);
         const message = await fetchMessageById(client, this.channelId, this.messageId);
-        // TODO: Revenir là-dessus pour améliorer la logique de suppression
-        if(message) {
-            message.edit({ embeds: [newEmbed] });
-        } else {
-            // Supprimer l'Embed in channel
-        }
+        if(message) message.edit({ embeds: [newEmbed] });
     }
 }
 
@@ -225,6 +220,11 @@ class Embed {
             const msg = await fetchMessageById(client, msgSent.channelId, msgSent.messageId);
             await msg.edit({ embeds: [embed] });
         }
+    }
+
+    async deleteFromEmbedSent (messageId) {
+        this.embedsSent = this.embedsSent.filter(embedSent => embedSent.messageId !== messageId);
+        await ModelEmbedInChannel.destroy({ where: { messageId } });
     }
 }
 

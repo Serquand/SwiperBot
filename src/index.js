@@ -5,22 +5,35 @@ dotenv.config({ path: NODE_ENV === 'prod' ? '.env' : `.env.local` });
 const { Client, Collection } = require('discord.js');
 const { eventHandler, commandHandler } = require('./tools/handlers.js');
 const db = require('./models');
-const { getAllSwipers, initializeSwiper } = require('./services/Swiper.js');
+const { initializeSwiper } = require('./services/Swiper.js');
 const { initializeAllEmbeds, getListEmbed } = require('./services/Embed.js');
-const { initializeSelectMenu } = require('./services/SelectMenu.js');
+const { initializeSelectMenu, getListOfSelectMenuInChannel, deleteFromSelectMenuInChannel } = require('./services/SelectMenu.js');
+const { initializeTurnOver } = require('./tools/utils.js');
+const { fetchMessageById } = require('./tools/discord.js');
 
-const initializeTurnOver = (client) => {
+const deleteAllSelectMenuWithMessageDeleted = async (client) => {
+    const listOfSelectMenuInChannel = getListOfSelectMenuInChannel();
+    for(const sm of listOfSelectMenuInChannel) {
+        const msg = await fetchMessageById(client, sm.channelId, sm.messageId);
+        if (!msg) deleteFromSelectMenuInChannel(sm.messageId)
+    }
+}
+
+const deleteAllEmbedWithMessageDeleted = async (client) => {
+    const listEmbed = getListEmbed();
+    for(const embed of listEmbed) {
+        for(const embedSent of embed.embedsSent) {
+            const msg = await fetchMessageById(client, embedSent.channelId, embedSent.messageId);
+            if (!msg) embed.deleteFromEmbedSent(embedSent.messageId);
+        }
+    }
+}
+
+const initializeCheckInfoSent = async (client) => {
     setInterval(() => {
-        for (const swiper of getAllSwipers()) {
-            swiper.type === 'AUTO' && swiper.goToNextImage(client);
-        }
-
-        for(const embed of getListEmbed()) {
-            for(const embedSent of embed.getListOfEmbedsSent()) {
-                embedSent.refreshSwiper(client);
-            }
-        }
-    }, 5_000);
+        deleteAllSelectMenuWithMessageDeleted(client); // Select Menu
+        deleteAllEmbedWithMessageDeleted(client); // Embed
+    }, 10 * 60 * 1_000);
 }
 
 const main = async () => {
@@ -36,6 +49,7 @@ const main = async () => {
         await initializeAllEmbeds();
         await initializeSelectMenu();
         initializeTurnOver(client);
+        initializeCheckInfoSent(client);
         console.log('Everything initialized !');
     }, process.env.NODE_ENV === 'dev' ? 1_000 : 10_000);
 }

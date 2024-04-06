@@ -1,6 +1,10 @@
 const { promisify } = require("util");
 const { glob } = require("glob");
 const { MessageSelectMenu, MessageActionRow } = require('discord.js');
+const { getAllSwipers } = require("../services/Swiper");
+const { getListEmbed } = require("../services/Embed");
+const { getListOfSelectMenuInChannel, deleteFromSelectMenuInChannel } = require('../services/SelectMenu');
+const { fetchMessageById } = require("./discord");
 
 /**
  *
@@ -56,10 +60,25 @@ function isValidColor(color) {
     return codeDeci >= 0 && codeDeci <= 16777215;
 }
 
+const initializeTurnOver = (client) => {
+    setInterval(() => {
+        for (const swiper of getAllSwipers()) {
+            swiper.type === 'AUTO' && swiper.goToNextImage(client);
+        }
+
+        for(const embed of getListEmbed()) {
+            for(const embedSent of embed.getListOfEmbedsSent()) {
+                embedSent.refreshSwiper(client);
+            }
+        }
+    }, 5_000);
+}
+
 module.exports = {
     getAllFilesFromDirectory,
     getNextIndex,
     getPreviousIndex,
     isGoodEmoji,
     isValidColor,
+    initializeTurnOver,
 }

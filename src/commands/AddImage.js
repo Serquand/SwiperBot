@@ -1,5 +1,7 @@
-const { getSwiperByName, addSwiperImage, getAllSwipers } = require("../services/Swiper");
+const { CommandInteraction, Client }  = require('discord.js');
+const { getSwiperByName, addSwiperImage, getAllSwipers, getAllSwipersTemplate } = require("../services/Swiper");
 const { sendAutocomplete } = require("../tools/autocomplete");
+const { sendBadInteraction } = require('../tools/discord');
 
 module.exports = {
     name: 'add_images',
@@ -45,6 +47,10 @@ module.exports = {
             });
         }
 
+        if (imageName.length > 250) {
+            return sendBadInteraction(interaction, "Le nom de l'image est trop longue. Longueur maximale autorisé : 250 caractères");
+        }
+
         // Check if the image exists in the swiper
         if(swiper.getImageByName(imageName)) {
             return interaction.reply({
@@ -65,5 +71,5 @@ module.exports = {
             ephemeral: true,
         });
     },
-    autocomplete: (interaction) => sendAutocomplete(interaction, getAllSwipers(), 'swiperName')
+    autocomplete: (interaction) => sendAutocomplete(interaction, getAllSwipersTemplate(), 'swiperName')
 }

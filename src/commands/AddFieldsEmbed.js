@@ -5,6 +5,7 @@ const { sendAutocomplete } = require('../tools/autocomplete');
 module.exports = {
     name: "add_fields_embed",
     group: "Embed",
+    isDisabled: true,
     description: "Add a fields to an Embed",
     options: [
         {

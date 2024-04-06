@@ -6,7 +6,6 @@ const PORT = process.env.NODE_ENV === 'prod' && dbConfig.PORT ? dbConfig.PORT : 
 const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
     host: dbConfig.HOST,
     dialect: dbConfig.DIALECT,
-    port: PORT,
     logging: process.env.NODE_ENV === 'prod',
     pool: {
         max: dbConfig.pool.max,

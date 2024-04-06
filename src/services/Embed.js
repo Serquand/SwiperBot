@@ -144,7 +144,7 @@ class Embed {
      */
     async removeFieldsByName(name, client) {
         try {
-            await ModelEmbedField.destroy({ name, linkedTo: this.uid });
+            await ModelEmbedField.destroy({ where: {name, linkedTo: this.uid} });
             this.fields = this.fields.filter(field => field.name !== name);
             this.synchronize(client);
 
@@ -261,10 +261,9 @@ function getEmbedByName(name) {
 /**
  *
  * @param {Embed} embed
- * @param {Boolean} cascade
  * @returns {Promise<boolean>}
  */
-async function deleteEmbed(embed, cascade) {
+async function deleteEmbed(embed) {
 
 }
 

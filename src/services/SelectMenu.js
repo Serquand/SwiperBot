@@ -262,8 +262,10 @@ function getListOfSelectMenuInChannel() {
 }
 
 function deleteAllSelectMenuByUid(uid) {
+    console.log(listOfSelectMenu.length, listOfSelectMenuInChannel.length);
     listOfSelectMenu = listOfSelectMenu.filter(sm => sm.selectMenuUid !== uid);
     listOfSelectMenuInChannel = listOfSelectMenuInChannel.filter(sm => sm.linkedTo !== uid);
+    console.log(listOfSelectMenu.length, listOfSelectMenuInChannel.length);
 }
 
 /**

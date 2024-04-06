@@ -6,7 +6,6 @@ module.exports = {
     name: "delete_swiper",
     description: "Supprime un swiper",
     group: 'Swiper',
-    isDisabled: true,
     options: [
         {
             name: 'swiper_name',
@@ -33,7 +32,7 @@ module.exports = {
         }
 
         try {
-            const result = await deleteSwiper(swiperName);
+            const result = await deleteSwiper(swiperName, client);
             if(!result) throw new Error('Something went wrong when deleting a swiper');
         } catch (e) {
 

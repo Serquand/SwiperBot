@@ -2,13 +2,12 @@ const { sendAutocomplete } = require('../tools/autocomplete');
 const { getListSelectMenu, getSelectMenuByName, getListOfSelectMenuInChannel, deleteAllSelectMenuByUid } = require('../services/SelectMenu');
 const { Client, CommandInteraction } = require('discord.js');
 const { sendBadInteraction, fetchMessageById } = require('../tools/discord');
-const { Embed, SelectMenu, SelectMenuInChannel } = require('../models');
+const { SelectMenu } = require('../models');
 
 module.exports = {
     name: 'delete_select_menu',
     group: "Select Menu",
     description: "Supprime un Select Menu et tous ses enfants envoyés",
-    isDisabled: true,
     options: [
         {
             name: 'select_menu_name',

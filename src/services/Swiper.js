@@ -169,7 +169,7 @@ async function initializeSwiper() {
     }
 }
 
-async function deleteSwiper(swiperName) {
+async function deleteSwiper(swiperName, client) {
     const swiper = getSwiperByName(swiperName);
     if(!swiper) return null;
 

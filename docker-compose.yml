@@ -9,7 +9,7 @@ services:
       - MYSQL_DATABASE=$DB_NAME
       - MYSQL_ROOT_PASSWORD=QuwLE7fs6oBruU7GTHeCoS0uPaMdd9yX9wruDkb52QNY8CxDmz
     ports:
-      - "3306:3306"
+      - "3007:3006"
     volumes:
       - db:/var/lib/mysql
   app:
@@ -22,7 +22,7 @@ services:
       - DB_USER=$DB_USER
       - DB_PASSWORD=$DB_PASSWORD
       - DB_NAME=$DB_NAME
-      - DB_PORT=3306
+      - DB_PORT=3007
       - BOT_TOKEN=$BOT_TOKEN
       - TZ=CET
       - NODE_ENV=prod

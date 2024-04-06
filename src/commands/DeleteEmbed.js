@@ -1,12 +1,12 @@
 const { Client, CommandInteraction } = require("discord.js");
-const { getEmbedByName, deleteEmbed } = require("../services/Embed");
+const { getEmbedByName, deleteEmbed, getListEmbed } = require("../services/Embed");
 const { sendAutocomplete } = require("../tools/autocomplete");
+const { sendBadInteraction } = require("../tools/discord");
 
 module.exports = {
     name: "delete_embed",
     description: "Supprime un Embed",
     group: "Embed",
-    isDisabled: true,
     options: [
         {
             name: 'embed_name',
@@ -14,12 +14,6 @@ module.exports = {
             required: true,
             description: "Le nom de l'Embed à supprimer",
             autocomplete: true,
-        },
-        {
-            name: "force",
-            type: 'BOOLEAN',
-            required: false,
-            description: "Voulez-vous supprimer l'Embed et toutes les informations asociées ?"
         }
     ],
     /**
@@ -28,11 +22,7 @@ module.exports = {
      * @param {CommandInteraction} interaction
      */
     runSlash: async (client, interaction) => {
-        const embedName = interaction.options.getString('embed_name');
-        const cascade = interaction.options.getBoolean('force');
-
-        // Check if the emebd exists
-        const embed = getEmbedByName(embedName);
+        const embed = getEmbedByName(interaction.options.getString('embed_name'));
         if(!embed) {
             return interaction.reply({
                 content: "L'Embed demandé n'existe pas !",
@@ -41,23 +31,11 @@ module.exports = {
         }
 
         try {
-            if(await deleteEmbed(embed, cascade)) {
-                return interaction.reply({
-                    content: 'L\'Embed a bien été supprimé',
-                    ephemeral: true,
-                });
-            } else {
-                return interaction.reply({
-                    content: 'Something went wrong',
-                    ephemeral: true,
-                });
-            }
+            if(await deleteEmbed(embed)) return sendBadInteraction(interaction, 'L\'Embed a bien été supprimé');
+            else return sendBadInteraction(interaction);
         } catch(err) {
             console.error(err);
-            return interaction.reply({
-                content: 'Something went wrong',
-                ephemeral: true,
-            });
+            return sendBadInteraction(interaction);
         }
     },
     autocomplete: (interaction) => sendAutocomplete(interaction, getListEmbed(), 'name')

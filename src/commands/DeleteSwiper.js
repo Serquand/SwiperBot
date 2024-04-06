@@ -6,6 +6,7 @@ module.exports = {
     name: "delete_swiper",
     description: "Supprime un swiper",
     group: 'Swiper',
+    isDisabled: true,
     options: [
         {
             name: 'swiper_name',

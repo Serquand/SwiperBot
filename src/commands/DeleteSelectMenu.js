@@ -8,6 +8,7 @@ module.exports = {
     name: 'delete_select_menu',
     group: "Select Menu",
     description: "Supprime un Select Menu et tous ses enfants envoyés",
+    isDisabled: true,
     options: [
         {
             name: 'select_menu_name',

@@ -6,6 +6,7 @@ module.exports = {
     name: "delete_embed",
     description: "Supprime un Embed",
     group: "Embed",
+    isDisabled: true,
     options: [
         {
             name: 'embed_name',

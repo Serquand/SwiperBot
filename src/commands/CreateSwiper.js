@@ -32,6 +32,8 @@ module.exports = {
         if(name.length > 250) return sendBadInteraction(interaction, "Le nom du swiper est trop long. Longueur maximale : 250 caractères.");
         if(getSwiperByName(name)) return sendBadInteraction(interaction, "Un swiper avec ce nom existe déjà !");
 
+        if(name.trim() === 'Aucun') return sendBadInteraction(interaction, "Vous ne pouvez pas appeler le Swiper de cette manière");
+
         try {
             if(!await addSwiper(name, description)) return sendBadInteraction(interaction);
             else return sendBadInteraction(interaction, "Le Swiper a bien été créé !");

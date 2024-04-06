@@ -44,9 +44,22 @@ async function isGoodEmoji (channel, emoji) {
     }
 }
 
+/**
+ *
+ * @param {String} color
+ * @returns {boolean}
+ */
+function isValidColor(color) {
+    if(!color.startsWith('#') || !color.split('#').length === 1 || color.length !== 7) return false;
+    const codeHexa = color.split('#')[1];
+    const codeDeci = parseInt(codeHexa, 16);
+    return codeDeci >= 0 && codeDeci <= 16777215;
+}
+
 module.exports = {
     getAllFilesFromDirectory,
     getNextIndex,
     getPreviousIndex,
     isGoodEmoji,
+    isValidColor,
 }

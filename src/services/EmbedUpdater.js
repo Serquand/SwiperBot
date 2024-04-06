@@ -2,6 +2,8 @@ const { MessageComponentInteraction, Modal, ModalSubmitInteraction, MessageEmbed
 const { getEmbedByUid } = require("./Embed");
 const { sendBadInteraction, getTextInputForActionUpdateModal, generateButtonToUpdateEmbed } = require("../tools/discord");
 const { getSwiperByName } = require("./Swiper");
+const { EmbedField, Embed: ModelEmbed } = require("../models");
+const { isValidColor } = require("../tools/utils");
 
 class EmbedUpdaterManager {
     constructor () {
@@ -34,11 +36,55 @@ class EmbedUpdaterManager {
      *
      * @param {MessageComponentInteraction} interaction
      * @param {String} uid
-     * @param {MessageEmbed} embed
+     * @param {MessageEmbed} messageEmbed
      * @param {String} content
      */
-    saveModal(interaction, uid, embed, content) {
-        console.log(interaction, uid, embed, content);
+    async saveModal(interaction, uid, messageEmbed, content) {
+        const embed = getEmbedByUid(uid);
+        if(!embed) return sendBadInteraction(interaction);
+
+        const swiperName = content.split("\nSwiper associé à l'Embed : ")[1];
+        const swiperUid = swiperName === 'Aucun' ? null : getSwiperByName(swiperName)?.swiperUid;
+        if(swiperName !== 'Aucun' && !swiperUid) return sendBadInteraction(interaction);
+
+        try {
+            embed.updateAll(messageEmbed, swiperUid);
+
+            // Update the fields of the Embed
+            const newFields = messageEmbed.fields.map((field) => ({
+                name: field.name,
+                inline: field.inline,
+                value: field.value,
+                linkedTo: uid,
+            }));
+
+            // Update the Embed in the DB
+            const newModelEmbed = {
+                title: messageEmbed.title,
+                authorName: messageEmbed.author?.name,
+                authorIconUrl: messageEmbed.author?.iconURL,
+                authorUrl: messageEmbed.author?.url,
+                color: messageEmbed.color,
+                description: messageEmbed.description,
+                imageUrl: swiperUid === null ? messageEmbed.image.url : null,
+                swiperUid,
+                thumbnailUrl: messageEmbed.thumbnail?.url,
+                footerTitle: messageEmbed.footer?.text,
+                footerIconUrl: messageEmbed.footer?.iconURL,
+                embedUrl: messageEmbed.url,
+            };
+            await EmbedField.destroy({ where: { linkedTo: uid } });
+            await Promise.all([
+                ModelEmbed.update(newModelEmbed, { where: { uid } }),
+                EmbedField.bulkCreate(newFields),
+                interaction.message.delete()
+            ]);
+        } catch (error) {
+            console.error(error);
+            return sendBadInteraction(interaction);
+        }
+
+        return sendBadInteraction(interaction, "L'Embed a bien été modifié !");
     }
 
     /**
@@ -70,7 +116,11 @@ class EmbedUpdaterManager {
                 embed.setTitle(interaction.fields.getTextInputValue(uid + '-title'));
                 break;
             case 'color':
-                embed.setColor(interaction.fields.getTextInputValue(uid + '-color'));
+                const newColor = interaction.fields.getTextInputValue(uid + '-color');
+                if(!isValidColor(newColor)) {
+                    return sendBadInteraction(interaction, "Vous devez envoyer le code hexadécimal de la couleur souhaitée !");
+                }
+                embed.setColor(newColor);
                 break;
             case 'description':
                 embed.setDescription(interaction.fields.getTextInputValue(uid + '-description'));

@@ -2,6 +2,8 @@ const { Client, CommandInteraction } = require("discord.js");
 const { getSwiperByName, getAllSwipersTemplate } = require("../services/Swiper");
 const { addEmbed, getEmbedByName } = require("../services/Embed");
 const { sendAutocomplete } = require("../tools/autocomplete");
+const { isValidColor } = require("../tools/utils");
+const { sendBadInteraction } = require("../tools/discord");
 
 module.exports = {
     name: 'create_embed',
@@ -86,6 +88,8 @@ module.exports = {
         const embedThumbnailUrl = interaction.options.getString('embed_thumbnail_url');
         const color = interaction.options.getString('color');
         const embedImageUrl = interaction.options.getString('embed_image_url');
+
+        if(color && !isValidColor(color)) return sendBadInteraction(interaction, "La couleur saisie n'est pas correcte !");
 
         // Check if the swiper really exists
         const swiper = getSwiperByName(embedSwiper);

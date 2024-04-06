@@ -3,7 +3,7 @@ const ModelEmbed = db.Embed;
 const ModelEmbedField = db.EmbedField;
 const ModelEmbedInChannel = db.EmbedInChannel;
 
-const { MessageEmbed, TextChannel } = require("discord.js");
+const { MessageEmbed, TextChannel, Message } = require("discord.js");
 const { getSwiperByUid } = require('./Swiper');
 const { fetchMessageById } = require('../tools/discord');
 
@@ -58,7 +58,7 @@ class EmbedInChannel {
 }
 
 class Embed {
-    constructor (color, author, title, description, imageUrl, thumbnailUrl, name, fields, uid, embedsSent, swiperUid) {
+    constructor (color, author, title, description, imageUrl, thumbnailUrl, name, fields, uid, embedsSent, swiperUid, footerTitle, footerIconUrl, embedUrl) {
         this.swiperUid = swiperUid;
         this.embedsSent = embedsSent;
         this.fields = fields;
@@ -70,6 +70,9 @@ class Embed {
         this.thumbnailUrl = thumbnailUrl;
         this.name = name;
         this.uid = uid;
+        this.footerTitle = footerTitle;
+        this.footerIconUrl = footerIconUrl;
+        this.embedUrl = embedUrl;
         this.getTheSwiper(this.swiperUid);
     }
 
@@ -96,6 +99,26 @@ class Embed {
     update(key, newValue) {
         this[key] = newValue;
         if(key === 'imageUrl') this.getTheSwiper(null);
+        this.synchronize();
+    }
+
+    /**
+     *
+     * @param {MessageEmbed} embed
+     * @param {String} swiperUid
+     */
+    updateAll (embed, swiperUid) {
+        this.color = embed.color;
+        this.title = embed.title;
+        this.getTheSwiper(swiperUid);
+        this.fields = embed.fields;
+        this.imageUrl = swiperUid ? null : embed.image?.url ?? null;
+        this.author = { iconURL: embed.author?.iconURL, name: embed.author?.name, url: embed.author?.url };
+        this.description = embed.description;
+        this.embedUrl = embed.url;
+        this.footerIconUrl = embed.footer?.iconURL;
+        this.footerTitle = embed.footer?.text;
+        this.thumbnailUrl = embed.thumbnail?.url;
         this.synchronize();
     }
 
@@ -139,6 +162,8 @@ class Embed {
         if(this.thumbnailUrl) embed.setThumbnail(this.thumbnailUrl);
         if (this.hasSwiper) embed.setImage(this.swiper.swiperImages[0].imageUrl);
         else if(this.imageUrl) embed.setImage(this.imageUrl);
+        else if(this.footerTitle) embed.setFooter({ text: this.footerTitle, iconURL: this.footerIconUrl });
+        embed.setURL(this.embedUrl);
 
         return embed;
     }
@@ -230,8 +255,8 @@ async function initializeAllEmbeds() {
 
 /**
  *
- * @param {Embed} uid
- * @returns
+ * @param {String} uid
+ * @returns {Embed}
  */
 function getEmbedByUid(uid) {
     return listEmbed.find(embed => embed.uid === uid);

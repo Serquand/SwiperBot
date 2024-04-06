@@ -132,16 +132,12 @@ class SelectMenu {
             const components = [new MessageActionRow().addComponents(this.generateSelectMenu(msgSend.customId))];
             const msg = await fetchMessageById(client, msgSend.channelId, msgSend.messageId);
             if(this.options.length === 0) {
-                await this.removeSelectMenu();
+                await deleteAllSelectMenuByUid(this.selectMenuUid);
                 await msg.delete();
             } else {
                 await msg.edit({ components });
             }
         }
-    }
-
-    async removeSelectMenu() {
-
     }
 
     generateSelectMenu (customId) {
@@ -261,11 +257,10 @@ function getListOfSelectMenuInChannel() {
     return listOfSelectMenuInChannel;
 }
 
-function deleteAllSelectMenuByUid(uid) {
-    console.log(listOfSelectMenu.length, listOfSelectMenuInChannel.length);
+async function deleteAllSelectMenuByUid(uid) {
+    await ModelSelectMenu.destroy({ where: { uid } });
     listOfSelectMenu = listOfSelectMenu.filter(sm => sm.selectMenuUid !== uid);
     listOfSelectMenuInChannel = listOfSelectMenuInChannel.filter(sm => sm.linkedTo !== uid);
-    console.log(listOfSelectMenu.length, listOfSelectMenuInChannel.length);
 }
 
 /**

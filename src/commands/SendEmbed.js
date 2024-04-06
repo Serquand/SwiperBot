@@ -28,9 +28,9 @@ module.exports = {
      * @returns
      */
     runSlash: (client, interaction) => {
-        const embedName = interaction.options.getString('embed_name');
+        const embed = getEmbedByName(interaction.options.getString('embed_name'));
         const channel = interaction.options.getChannel('channel');
-        const embed = getEmbedByName(embedName);
+
         if(!embed) {
             return interaction.reply({ content: "Aucun embed n'a été trouvé avec ce nom !", ephemeral: true });
         } else if(!channel.isText()) {

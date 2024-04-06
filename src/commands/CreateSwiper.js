@@ -1,5 +1,6 @@
 const { Client, CommandInteraction } = require("discord.js");
 const { getSwiperByName, addSwiper } = require('../services/Swiper');
+const { sendBadInteraction } = require("../tools/discord");
 
 module.exports = {
     name: 'create_swiper',
@@ -17,18 +18,6 @@ module.exports = {
             type: 'STRING',
             required: true,
             description: "La description du swiper",
-        },
-        {
-            name: 'first_image',
-            type: 'STRING',
-            required: true,
-            description: "L'URL de la première image à envoyer",
-        },
-        {
-            name: 'first_image_name',
-            type: "STRING",
-            required: true,
-            description: 'Le nom de la première image à envoyer'
         }
     ],
     /**
@@ -39,36 +28,16 @@ module.exports = {
     runSlash: async (client, interaction) => {
         const name = interaction.options.getString('name');
         const description = interaction.options.getString('description');
-        const firstImage = interaction.options.getString('first_image');
-        const firstImageName = interaction.options.getString('first_image_name');
 
-        // Check data => Check if the name already exists
-        if(getSwiperByName()) {
-            return interaction.reply({
-                content: "Un swiper avec ce nom existe déjà !",
-                ephemeral: true
-            });
-        }
+        if(name.length > 250) return sendBadInteraction(interaction, "Le nom du swiper est trop long. Longueur maximale : 250 caractères.");
+        if(getSwiperByName(name)) return sendBadInteraction(interaction, "Un swiper avec ce nom existe déjà !");
 
         try {
-            const result = await addSwiper(name, description, firstImageName, firstImage);
-            if(!result) {
-                return interaction.reply({
-                    content: "Somethind bad happened",
-                    ephemeral: true
-                });
-            }
+            if(!await addSwiper(name, description)) return sendBadInteraction(interaction);
+            else return sendBadInteraction(interaction, "Le Swiper a bien été créé !");
         } catch (error) {
             console.error(error);
-            return interaction.reply({
-                content: 'Something bad happened',
-                ephemeral: true
-            });
+            return sendBadInteraction(interaction);
         }
-
-        return interaction.reply({
-            content: 'Working on that',
-            ephemeral: true,
-        });
     }
 }

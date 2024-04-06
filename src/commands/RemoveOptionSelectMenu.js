@@ -29,14 +29,11 @@ module.exports = {
      * @param {CommandInteraction} interaction
      */
     runSlash: async (client, interaction) => {
-        const selectMenuName = interaction.options.getString('select_menu_name');
         const optionLabel = interaction.options.getString('option_label');
+        const selectMenu = getSelectMenuByName(interaction.options.getString('select_menu_name'));
 
-        const selectMenu = getSelectMenuByName(selectMenuName);
         if(!selectMenu) return sendBadInteraction(interaction, "Aucun Select Menu n'a été trouvé avec ce nom !");
-
-        const option = selectMenu.getOptionByLabel(optionLabel);
-        if(!option) return sendBadInteraction(interaction, "Aucun label n'a été trouvé avec ce nom !");
+        if(!selectMenu.getOptionByLabel(optionLabel)) return sendBadInteraction(interaction, "Aucun label n'a été trouvé avec ce nom !");
 
         try {
             const result = await selectMenu.removeOption(optionLabel);

@@ -89,16 +89,16 @@ function getSwiperByUid(uid) {
     return allSwiperTemplate.find(s => s.swiperUid === uid);
 }
 
-async function addSwiper (swiperName, swiperDescription, imageName, imageUrl) {
+async function addSwiper (swiperName, swiperDescription) {
     try {
         const { dataValues: data } = await ModelSwiper.create({
             name: swiperName,
             description: swiperDescription,
         });
         allSwiperTemplate.push(new SwiperTemplate(swiperName, swiperDescription, data.uid));
-        return await addSwiperImage(swiperName, imageName, imageUrl);;
+        return true;
     } catch {
-        return null;
+        return false;
     }
 }
 

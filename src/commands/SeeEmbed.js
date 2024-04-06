@@ -6,6 +6,7 @@ module.exports = {
     name: 'see_embed',
     description: "Affiche un Embed",
     group: "Embed",
+    isDisabled: true,
     options: [
         {
             name: 'embed_name',

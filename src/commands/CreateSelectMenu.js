@@ -68,9 +68,11 @@ module.exports = {
         }
 
         try {
-            if (await createSelectMenu(selectMenuName, selectMenuDescription, selectMenuTitle))
-                sendBadInteraction(interaction, "Le Select Menu a bien été créé");
-            else sendBadInteraction(interaction);
+            if (await createSelectMenu(selectMenuName, selectMenuDescription, selectMenuTitle)) {
+                return sendBadInteraction(interaction, "Le Select Menu a bien été créé");
+            } else {
+                return sendBadInteraction(interaction);
+            }
         } catch (error) {
             console.error(error);
             return sendBadInteraction(interaction);

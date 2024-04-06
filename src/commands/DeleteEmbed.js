@@ -15,10 +15,10 @@ module.exports = {
             autocomplete: true,
         },
         {
-            name: "cascade",
+            name: "force",
             type: 'BOOLEAN',
             required: false,
-            description: "Voulez-vous supprimer tous les Embeds envoyés en rapport avec celui-ci ?"
+            description: "Voulez-vous supprimer l'Embed et toutes les informations asociées ?"
         }
     ],
     /**
@@ -28,7 +28,7 @@ module.exports = {
      */
     runSlash: async (client, interaction) => {
         const embedName = interaction.options.getString('embed_name');
-        const cascade = interaction.options.getBoolean('cascade');
+        const cascade = interaction.options.getBoolean('force');
 
         // Check if the emebd exists
         const embed = getEmbedByName(embedName);

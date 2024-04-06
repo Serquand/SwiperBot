@@ -1,6 +1,7 @@
 const { Client, CommandInteraction } = require("discord.js");
 const { getSwiperByName, sendSwiper, getAllSwipersTemplate } = require("../services/Swiper");
 const { sendAutocomplete } = require("../tools/autocomplete");
+const { sendBadInteraction } = require("../tools/discord");
 
 module.exports = {
     name: "send_swiper",
@@ -43,6 +44,8 @@ module.exports = {
                 content: "Le swiper demandé n'existe pas !",
                 ephemeral: true,
             });
+        } else if(swiper.swiperImages.length === 0) {
+            return sendBadInteraction(interaction, "Le Swiper n'a pas d'image et ne peut donc pas être envoyé !");
         }
 
         try {

@@ -1,6 +1,7 @@
 const { Client, CommandInteraction, AutocompleteInteraction } = require("discord.js");
 const { getEmbedByName, getListEmbed } = require("../services/Embed");
 const { sendAutocomplete } = require("../tools/autocomplete");
+const { sendBadInteraction } = require("../tools/discord");
 
 module.exports = {
     name: 'remove_field_embed',
@@ -28,42 +29,18 @@ module.exports = {
      * @param {CommandInteraction} interaction
      */
     runSlash: async (client, interaction) => {
-        const embedName = interaction.options.getString('embed_name');
+        const embed = getEmbedByName(interaction.options.getString('embed_name'));
         const fieldName = interaction.options.getString('field_name');
 
-        const embed = getEmbedByName(embedName);
-        if(!embed) {
-            return interaction.reply({
-                content: "L'Embed que vous voulez supprimer n'existe pas !",
-                ephemeral: true,
-            });
-        }
-
-        if(!embed.getFieldByName(fieldName)) {
-            return interaction.reply({
-                content: "Le champ que vous supprimer n'existe pas !",
-                ephemeral: true,
-            });
-        }
+        if(!embed) return sendBadInteraction(interaction, "L'Embed que vous voulez supprimer n'existe pas !");
+        if(!embed.getFieldByName(fieldName)) return sendBadInteraction(interaction, "Le champ que vous supprimer n'existe pas !")
 
         try {
-            const result = await embed.removeFieldsByName(fieldName);
-            if(result) {
-                return interaction.reply({
-                    content: "Le champ a bien été supprimé !",
-                    ephemeral: true,
-                    });
-            } else {
-                return interaction.reply({
-                    content: "Something went wrong",
-                    ephemeral: true,
-                });
-            }
+            if(await embed.removeFieldsByName(fieldName)) return sendBadInteraction(interaction, "Le champ a bien été supprimé !");
+            else return sendBadInteraction(interaction);
         } catch (e) {
-            return interaction.reply({
-                content: "Something went wrong",
-                ephemeral: true,
-            });
+            console.error(e);
+            return sendBadInteraction(interaction);
         }
     },
     /**
@@ -74,8 +51,7 @@ module.exports = {
         if(interaction.options.getFocused(true).name === 'embed_name') {
             sendAutocomplete(interaction, getListEmbed(), 'name')
         } else if(interaction.options.getFocused(true).name === 'field_name') {
-            const embedName = interaction.options.getString('embed_name');
-            const embed = getEmbedByName(embedName);
+            const embed = getEmbedByName(interaction.options.getString('embed_name'));
             if(!embed) return null;
             sendAutocomplete(interaction, embed.fields, 'name');
         }

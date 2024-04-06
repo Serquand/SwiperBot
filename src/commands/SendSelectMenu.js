@@ -54,8 +54,7 @@ module.exports = {
         }
 
         try {
-            const result = await sendASelectMenu(selectMenu, channel);
-            if(result) {
+            if(await sendASelectMenu(selectMenu, channel)) {
                 return interaction.reply({
                     content: "Le Select Menu a bien été envoyé !",
                     ephemeral: true

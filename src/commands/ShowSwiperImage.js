@@ -1,6 +1,7 @@
 const { Client, CommandInteraction, AutocompleteInteraction } = require("discord.js");
 const { getSwiperByName, getAllSwipers, getAllSwipersTemplate } = require("../services/Swiper");
 const { sendAutocomplete } = require("../tools/autocomplete");
+const { sendBadInteraction } = require("../tools/discord");
 
 module.exports = {
     name: 'show_swiper_image',
@@ -28,26 +29,13 @@ module.exports = {
      * @param {CommandInteraction} interaction
      */
     runSlash: (client, interaction) => {
-        const swiperName = interaction.options.getString('swiper_name');
-        const imageName = interaction.options.getString('image_name');
-        const swiper = getSwiperByName(swiperName);
-        if(!swiper) {
-            return interaction.reply({
-                content: "Le swiper que vous avez demandé n'existe pas !",
-                ephemeral: true
-            });
-        }
-        const swiperImage = swiper.getImageByName(imageName);
-        if(!swiperImage) {
-            return interaction.reply({
-                content: "L'image que vous avez demandé n'existe pas !",
-                ephemeral: true
-            });
-        }
-        return interaction.reply({
-            content: swiperImage.imageUrl,
-            ephemeral: true
-        });
+        const swiper = getSwiperByName(interaction.options.getString('swiper_name'));
+        if(!swiper) return sendBadInteraction(interaction, "Le swiper que vous avez demandé n'existe pas !");
+
+        const swiperImage = swiper.getImageByName(interaction.options.getString('image_name'));
+        if(!swiperImage) return sendBadInteraction(interaction, "L'image que vous avez demandé n'existe pas !");
+
+        return sendBadInteraction(interaction, swiperImage.imageUrl);
     },
     /**
      *

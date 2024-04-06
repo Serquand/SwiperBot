@@ -49,30 +49,24 @@ module.exports = {
      * @param {CommandInteraction} interaction
      */
     runSlash: async (client, interaction) => {
-        const selectMenuName = interaction.options.getString('select_menu_name');
         const optionLabel = interaction.options.getString('option_label');
-        const embedName = interaction.options.getString('embed_name');
         const optionEmoji = interaction.options.getString('option_emoji');
         const optionDescription = interaction.options.getString('option_description');
 
         // Check if the menu exists
-        const selectMenu = getSelectMenuByName(selectMenuName);
+        const selectMenu = getSelectMenuByName(interaction.options.getString('select_menu_name'));
         if(!selectMenu) return sendBadInteraction(interaction, "Le Select Menu n'existe pas !");
 
         // Check if the embed exists
-        const embed = getEmbedByName(embedName);
+        const embed = getEmbedByName(interaction.options.getString('embed_name'));
         if(!embed) return sendBadInteraction(interaction, "Aucun Embed n'a été trouvé avec ce nom !");
 
-        // Check if the option exists
         if(selectMenu.getOptionByLabel(optionLabel)) return sendBadInteraction(interaction, "Une option avec ce label existe déjà dans ce Select Menu !");
-
-        // Check if the value exists
+        if(selectMenu.options.length === 25) return sendBadInteraction(interaction, "Vous avez atteint le nombre maximum d'options pour ce Select Menu !");
         if(selectMenu.selectMenuHaAlreadyTheEmbed(embed.uid)) return sendBadInteraction(interaction, "Une option avec cet Embed existe déjà dans ce Select Menu !");
 
-        // Check the length of the option label
         if(optionLabel.length > 25) return sendBadInteraction(interaction, "Le label est trop long. Longueur maximale : 25 caracteres");
 
-        // Check the length of the option description
         if(optionDescription && optionDescription.length > 50) return sendBadInteraction(interaction, "La description est trop longue. Longueur maximale : 50 caracteres");
 
         if(optionEmoji) {

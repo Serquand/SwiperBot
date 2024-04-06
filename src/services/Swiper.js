@@ -1,6 +1,7 @@
-const { TextChannel } = require('discord.js');
+const { TextChannel, Client } = require('discord.js');
 const db = require('../models');
 const { fetchMessageById } = require('../tools/discord');
+const { getListEmbed } = require('./Embed');
 const ModelSwiper = db.Swiper;
 const ModelSwiperImage = db.SwiperImage;
 const SwiperInChannel = db.SwiperInChannel;
@@ -169,7 +170,13 @@ async function initializeSwiper() {
     }
 }
 
-async function deleteSwiper(swiperName) {
+/**
+ *
+ * @param {String} swiperName
+ * @param {Client} clientId
+ * @returns
+ */
+async function deleteSwiper(swiperName, client) {
     const swiper = getSwiperByName(swiperName);
     if(!swiper) return null;
 
@@ -179,6 +186,12 @@ async function deleteSwiper(swiperName) {
 
         allSwiperTemplate = allSwiperTemplate.filter(s => s.swiperName !== swiperName);
         allSwipers = allSwipers.filter(s => s.linkedTo !== swiper.swiperUid);
+
+        const allEmbeds = getListEmbed();
+        const embedToUpdate = allEmbeds.filter(e => e.swiperUid === swiper.swiperUid);
+        for(const embed of embedToUpdate) {
+            embed.updateSwiper(null, client);
+        }
 
         return true;
     } catch (e) {

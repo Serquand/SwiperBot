@@ -131,7 +131,7 @@ class EmbedUpdaterManager {
                     value: interaction.fields.getTextInputValue(uid + '-value-field-input'),
                     inline: interaction.fields.getTextInputValue(uid + '-inline-field-input').toLowerCase() === 'oui',
                 };
-                embed.addFields(newField.name, newField.value, newField.inline, interaction.client);
+                embed.addFields(newField);
                 break;
             case 'remove-field':
                 const fieldNameToDelete = interaction.fields.getTextInputValue(uid + '-remove-field-name');

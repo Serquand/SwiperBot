@@ -33,10 +33,9 @@ module.exports = {
         }
 
         try {
-            const result = await deleteSwiper(swiperName);
+            const result = await deleteSwiper(swiperName, client);
             if(!result) throw new Error('Something went wrong when deleting a swiper');
         } catch (e) {
-
             return interaction.reply({
                 content: "Something bad happened",
                 ephemeral: true,

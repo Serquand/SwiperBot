@@ -160,7 +160,8 @@ const Embed = (sequelize, Sequelize) => {
             references: {
                 model: Swiper(sequelize, Sequelize),
                 key: "uid"
-            }
+            },
+            onDelete: 'SET NULL',
         },
 
         thumbnailUrl: {

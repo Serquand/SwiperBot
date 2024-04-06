@@ -46,7 +46,7 @@ module.exports = {
 
         try {
             await Embed.update({ swiperUid, imageUrl: null }, { where: { name: embedName } });
-            embed.updateSwiper(swiperUid);
+            embed.updateSwiper(swiperUid, client);
             return interaction.reply({
                 content: "Le swiper de l'Embed a bien été modifié",
                 ephemeral: true,

@@ -3,7 +3,7 @@ const ModelEmbed = db.Embed;
 const ModelEmbedField = db.EmbedField;
 const ModelEmbedInChannel = db.EmbedInChannel;
 
-const { MessageEmbed, TextChannel, Message } = require("discord.js");
+const { MessageEmbed, TextChannel, Client } = require("discord.js");
 const { getSwiperByUid } = require('./Swiper');
 const { fetchMessageById } = require('../tools/discord');
 
@@ -60,6 +60,9 @@ class EmbedInChannel {
 class Embed {
     constructor (color, author, title, description, imageUrl, thumbnailUrl, name, fields, uid, embedsSent, swiperUid, footerTitle, footerIconUrl, embedUrl) {
         this.swiperUid = swiperUid;
+        /**
+         * @type {Array<EmbedInChannel>}
+         */
         this.embedsSent = embedsSent;
         this.fields = fields;
         this.color = color;
@@ -90,24 +93,36 @@ class Embed {
         }
     }
 
-    updateSwiper(newSwiperUid) {
+    /**
+     *
+     * @param {String} newSwiperUid
+     * @param {Client} client
+     */
+    updateSwiper(newSwiperUid, client) {
         this.getTheSwiper(newSwiperUid);
-        this.synchronize();
+        this.synchronize(client);
         this.imageUrl = null;
     }
 
-    update(key, newValue) {
+    /**
+     *
+     * @param {String} key
+     * @param {String} newValue
+     * @param {Client} client
+     */
+    update(key, newValue, client) {
         this[key] = newValue;
         if(key === 'imageUrl') this.getTheSwiper(null);
-        this.synchronize();
+        this.synchronize(client);
     }
 
     /**
      *
      * @param {MessageEmbed} embed
      * @param {String} swiperUid
+     * * @param {Client} client
      */
-    updateAll (embed, swiperUid) {
+    updateAll (embed, swiperUid, client) {
         this.color = embed.color;
         this.title = embed.title;
         this.getTheSwiper(swiperUid);
@@ -119,18 +134,24 @@ class Embed {
         this.footerIconUrl = embed.footer?.iconURL;
         this.footerTitle = embed.footer?.text;
         this.thumbnailUrl = embed.thumbnail?.url;
-        this.synchronize();
+        this.synchronize(client);
     }
 
     getFieldByName(name) {
         return this.fields.find(field => field.name === name);
     }
 
-    async removeFieldsByName(name) {
+    /**
+     *
+     * @param {String} name
+     * @param {Client} client
+     * @returns
+     */
+    async removeFieldsByName(name, client) {
         try {
             await ModelEmbedField.destroy({ name, linkedTo: this.uid });
             this.fields = this.fields.filter(field => field.name !== name);
-            this.synchronize();
+            this.synchronize(client);
 
             return true;
         } catch (error) {
@@ -139,11 +160,19 @@ class Embed {
         }
     }
 
-    async addFields(name, value, inline) {
+    /**
+     *
+     * @param {String} name
+     * @param {String} value
+     * @param {Boolean} inline
+     * @param {Client} client
+     * @returns
+     */
+    async addFields(name, value, inline, client) {
         try {
             await ModelEmbedField.create({ name, value, inline, linkedTo: this.uid });
             this.fields.push({ name, value, inline });
-            this.synchronize();
+            this.synchronize(client);
             return true;
         } catch (error) {
             console.error(error);
@@ -186,9 +215,16 @@ class Embed {
         this.addEmbedSent(channel.id, message.id, type);
     }
 
-    synchronize() {
+    /**
+     *
+     * @param {Client} client
+     */
+    async synchronize (client) {
         const embed = this.generateEmbed();
-        console.log(this.swiper, this.imageUrl);
+        for(const msgSent of this.embedsSent) {
+            const msg = await fetchMessageById(client, msgSent.channelId, msgSent.messageId);
+            await msg.edit({ embeds: [embed] });
+        }
     }
 }
 

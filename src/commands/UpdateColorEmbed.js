@@ -50,7 +50,7 @@ module.exports = {
 
         try {
             await Embed.update({ color: newColor }, { where: { name: embedName } });
-            embed.update('color', newColor);
+            embed.update('color', newColor, client);
             return interaction.reply({
                 content: "La couleur de l'Embed a bien été modifié",
                 ephemeral: true,

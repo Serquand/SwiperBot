@@ -49,7 +49,7 @@ module.exports = {
 
         try {
             await Embed.update({ description: embedDescription }, { where: { name: embedName } });
-            embed.update('description', embedDescription);
+            embed.update('description', embedDescription, client);
             return interaction.reply({
                 content: "La description de l'Embed a bien été modifié",
                 ephemeral: true,

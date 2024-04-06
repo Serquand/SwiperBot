@@ -52,8 +52,8 @@ module.exports = {
                 { imageUrl: embedImage, swiper: null },
                 { where: { name: embedName } }
             );
-            embed.update('imageUrl', embedImage);
-            embed.update('swiper', null);
+            embed.update('imageUrl', embedImage, client);
+            embed.update('swiper', null, client);
             return interaction.reply({
                 content: "La couleur de l'Embed a bien été modifié",
                 ephemeral: true,

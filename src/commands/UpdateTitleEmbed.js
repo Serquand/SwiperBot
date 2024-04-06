@@ -41,7 +41,7 @@ module.exports = {
 
         try {
             await Embed.update({ title: newTitle }, { where: { name: embedName } });
-            embed.update('title', newTitle)
+            embed.update('title', newTitle, client);
             return interaction.reply({
                 content: "Le titre de l'Embed a bien été modifié",
                 ephemeral: true,

@@ -72,7 +72,7 @@ module.exports = {
 
         try {
             await Embed.update({ authorName, authorIconUrl, authorUrl }, { where: { name: embedName } });
-            embed.update('author', authorObject);
+            embed.update('author', authorObject, client);
             return interaction.reply({
                 content: "L'auteur de l'Embed a bien été modifié",
                 ephemeral: true,

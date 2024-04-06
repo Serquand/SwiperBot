@@ -48,7 +48,7 @@ class EmbedUpdaterManager {
         if(swiperName !== 'Aucun' && !swiperUid) return sendBadInteraction(interaction);
 
         try {
-            embed.updateAll(messageEmbed, swiperUid);
+            embed.updateAll(messageEmbed, swiperUid, interaction.client);
 
             // Update the fields of the Embed
             const newFields = messageEmbed.fields.map((field) => ({
@@ -131,7 +131,7 @@ class EmbedUpdaterManager {
                     value: interaction.fields.getTextInputValue(uid + '-value-field-input'),
                     inline: interaction.fields.getTextInputValue(uid + '-inline-field-input').toLowerCase() === 'oui',
                 };
-                embed.addFields(newField);
+                embed.addFields(newField.name, newField.value, newField.inline, interaction.client);
                 break;
             case 'remove-field':
                 const fieldNameToDelete = interaction.fields.getTextInputValue(uid + '-remove-field-name');

@@ -36,7 +36,7 @@ module.exports = {
         if(!embed.getFieldByName(fieldName)) return sendBadInteraction(interaction, "Le champ que vous supprimer n'existe pas !")
 
         try {
-            if(await embed.removeFieldsByName(fieldName)) return sendBadInteraction(interaction, "Le champ a bien été supprimé !");
+            if(await embed.removeFieldsByName(fieldName, client)) return sendBadInteraction(interaction, "Le champ a bien été supprimé !");
             else return sendBadInteraction(interaction);
         } catch (e) {
             console.error(e);

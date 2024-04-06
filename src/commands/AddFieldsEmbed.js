@@ -78,7 +78,7 @@ module.exports = {
 
         // Add the field to the Embed
         try {
-            if(await embed.addFields(fieldName, fieldValue, fieldInline)) {
+            if(await embed.addFields(fieldName, fieldValue, fieldInline, client)) {
                 return interaction.reply({
                     content: "Le champ a bien été ajouté !",
                     ephemeral: true,

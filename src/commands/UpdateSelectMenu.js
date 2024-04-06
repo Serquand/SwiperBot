@@ -50,8 +50,8 @@ module.exports = {
 
         try {
             await SelectMenu.update(newValue, { where: { uid: selectMenu.selectMenuUid } });
-            selectMenu.update('description', newValue.description);
-            selectMenu.update('placeholder', newValue.placeholder);
+            selectMenu.update('description', newValue.description, client);
+            selectMenu.update('placeholder', newValue.placeholder, client);
             selectMenu.synchronize();
             return sendBadInteraction(interaction, "Vous avez bien modifié le SelectMenu !");
         } catch (e) {

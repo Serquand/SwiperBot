@@ -40,7 +40,6 @@ class SelectMenuInChannel {
     async respondToInteraction(interaction, client) {
         try {
             // Generate and send Embed
-            this.customId = v4();
             const embed = getEmbedByUid(interaction.values[0]);
             if(!embed) return sendBadInteraction(interaction);
             interaction.reply({
@@ -224,7 +223,6 @@ async function initializeSelectMenu() {
         const newSelectMenu = new SelectMenu(sm.name, sm.description, sm.uid, sm.placeholder, listOptionAssigned);
         listOfSelectMenu.push(newSelectMenu);
     });
-
     allSelectMenuInChannels.forEach(inChannel => {
         listOfSelectMenuInChannel.push(new SelectMenuInChannel(inChannel.channelId, inChannel.messageId, inChannel.linkedTo, inChannel.uid));
     });

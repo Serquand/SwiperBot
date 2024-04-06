@@ -157,7 +157,7 @@ class Embed {
      */
     async sendEmbedInChannel(channel, type = 'AUTO') {
         const message = await channel.send({ embeds: [this.generateEmbed()] });
-        ModelEmbedInChannel.create({ channelId: channel.id, messageId: message.id, linkedTo: this.uid, swiperType: type  })
+        ModelEmbedInChannel.create({ channelId: channel.id, messageId: message.id, linkedTo: this.uid, swiperType: type });
         this.addEmbedSent(channel.id, message.id, type);
     }
 

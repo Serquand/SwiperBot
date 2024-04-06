@@ -52,7 +52,7 @@ module.exports = {
             await SelectMenu.update(newValue, { where: { uid: selectMenu.selectMenuUid } });
             selectMenu.update('description', newValue.description, client);
             selectMenu.update('placeholder', newValue.placeholder, client);
-            selectMenu.synchronize();
+            selectMenu.synchronize(client);
             return sendBadInteraction(interaction, "Vous avez bien modifié le SelectMenu !");
         } catch (e) {
             console.error(e);

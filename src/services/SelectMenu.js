@@ -1,6 +1,6 @@
 const { v4 } = require('uuid');
 const { SelectMenu: ModelSelectMenu, SelectMenuInChannel: ModelSelectMenuInChannel, SelectMenuOption: ModelSelectMenuOption } = require('../models');
-const { MessageSelectMenu, TextChannel, MessageActionRow, MessageComponentInteraction, Message } = require('discord.js');
+const { MessageSelectMenu, TextChannel, MessageActionRow, MessageComponentInteraction, Message, Client } = require('discord.js');
 const { getEmbedByUid } = require('./Embed');
 const { sendBadInteraction, fetchMessageById, generateButtonToSwitchSwiperImage } = require('../tools/discord');
 const { getEmbedInteractManager } = require('./EmbedInteract');
@@ -77,13 +77,14 @@ class SelectMenu {
      * @param {String} label
      * @param {String} description
      * @param {String} emoji
+     * @param {Client} client
      * @returns {Promise<boolean>}
      */
-    async addOption(needToSend, label, description, emoji) {
+    async addOption(needToSend, label, description, emoji, client) {
         try {
             await ModelSelectMenuOption.create({ description, label, needToSend, linkedTo: this.selectMenuUid, emoji });
-            await this.synchronize();
             this.options.push({ description, label, needToSend, linkedTo: this.selectMenuUid, emoji });
+            await this.synchronize(client);
             return true;
         } catch (e) {
             console.error(e);
@@ -99,11 +100,17 @@ class SelectMenu {
         this[key] = value;
     }
 
-    async removeOption(label) {
+    /**
+     *
+     * @param {String} label
+     * @param {Client} client
+     * @returns
+     */
+    async removeOption(label, client) {
         try {
             await ModelSelectMenuOption.destroy({ where: { linkedTo: this.selectMenuUid, label } });
-            await this.synchronize();
             this.options = this.options.filter(option => option.label !== label);
+            await this.synchronize(client);
             return true;
         } catch (e) {
             console.error(e);
@@ -115,7 +122,25 @@ class SelectMenu {
         return this.options.find(option => option.label === labelOption);
     }
 
-    async synchronize() {
+    /**
+     *
+     * @param {Client} client
+     */
+    async synchronize(client) {
+        const listOfSelectMenuSent = listOfSelectMenuInChannel.filter(sm => sm.linkedTo === this.selectMenuUid);
+        for(const msgSend of listOfSelectMenuSent) {
+            const components = [new MessageActionRow().addComponents(this.generateSelectMenu(msgSend.customId))];
+            const msg = await fetchMessageById(client, msgSend.channelId, msgSend.messageId);
+            if(this.options.length === 0) {
+                await this.removeSelectMenu();
+                await msg.delete();
+            } else {
+                await msg.edit({ components });
+            }
+        }
+    }
+
+    async removeSelectMenu() {
 
     }
 

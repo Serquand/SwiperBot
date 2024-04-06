@@ -36,7 +36,7 @@ module.exports = {
         if(!selectMenu.getOptionByLabel(optionLabel)) return sendBadInteraction(interaction, "Aucun label n'a été trouvé avec ce nom !");
 
         try {
-            const result = await selectMenu.removeOption(optionLabel);
+            const result = await selectMenu.removeOption(optionLabel, client);
             if(result) return sendBadInteraction(interaction, "L'option a bien été supprimé !");
             return sendBadInteraction(interaction);
         } catch(e) {

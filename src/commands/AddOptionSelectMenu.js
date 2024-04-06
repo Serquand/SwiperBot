@@ -75,7 +75,7 @@ module.exports = {
         }
 
         try {
-            if (await selectMenu.addOption(embed.uid, optionLabel, optionDescription, optionEmoji)) {
+            if (await selectMenu.addOption(embed.uid, optionLabel, optionDescription, optionEmoji, client)) {
                 return sendBadInteraction(interaction, "L'option a bien été ajouté");
             } else {
                 return sendBadInteraction(interaction);

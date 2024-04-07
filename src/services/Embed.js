@@ -4,10 +4,13 @@ const ModelEmbedField = db.EmbedField;
 const ModelEmbedInChannel = db.EmbedInChannel;
 
 const { MessageEmbed, TextChannel, Client } = require("discord.js");
-const { getSwiperByUid } = require('./Swiper');
 const { fetchMessageById } = require('../tools/discord');
+const { getListSelectMenu } = require('./SelectMenu');
 
-const listEmbed = [];
+/**
+ * @type {Array<Embed>}
+ */
+let listEmbed = [];
 
 async function addEmbed(color, authorIconUrl, authorUrl, authorName, title, description, imageUrl, thumbnailUrl, name, swiper) {
     try {
@@ -87,18 +90,6 @@ class EmbedInChannel {
         this.channelId = channelId;
         this.embedUid = embedUid;
         this.embed = getEmbedByUid(this.embedUid);
-        this.getTheSwiper(this.swiperUid);
-    }
-
-    getTheSwiper(swiperUid) {
-        if(swiperUid) {
-            const swiper = getSwiperByUid(swiperUid);
-            this.swiper = swiper;
-            this.hasSwiper = !!swiper;
-        } else {
-            this.swiper = null;
-            this.hasSwiper = false;
-        }
     }
 
     /**
@@ -106,14 +97,16 @@ class EmbedInChannel {
      * @returns {String} The url of the next image
      */
     getNextImageUrl() {
-        const maxLength = this.swiper.swiperImages.length;
+        const { getSwiperByUid } = require('./Swiper');
+        const swiper = getSwiperByUid(this.swiperUid);
+        const maxLength = swiper.swiperImages.length;
         const nextIndex = this.swiperIndex + 1;
         this.swiperIndex = (maxLength === nextIndex) ? 0 : nextIndex % maxLength;
-        return this.swiper.swiperImages[this.swiperIndex].imageUrl;
+        return swiper.swiperImages[this.swiperIndex].imageUrl;
     }
 
     async refreshSwiper(client) {
-        if (this.swiperType !== 'AUTO' || !this.hasSwiper) return;
+        if (this.swiperType !== 'AUTO') return;
         const newImageUrl = this.getNextImageUrl();
         const newEmbed = this.embed.generateEmbed().setImage(newImageUrl);
         const message = await fetchMessageById(client, this.channelId, this.messageId);
@@ -149,6 +142,7 @@ class Embed {
 
     getTheSwiper(swiperUid) {
         if(swiperUid) {
+            const { getSwiperByUid } = require('./Swiper');
             this.swiper = getSwiperByUid(swiperUid);
             this.hasSwiper = !!this.swiper;
         } else {
@@ -164,8 +158,8 @@ class Embed {
      */
     updateSwiper(newSwiperUid, client) {
         this.getTheSwiper(newSwiperUid);
-        this.synchronize(client);
         this.imageUrl = null;
+        this.synchronize(client);
     }
 
     /**
@@ -297,6 +291,97 @@ class Embed {
     }
 }
 
+async function addEmbed(color, authorIconUrl, authorUrl, authorName, title, description, imageUrl, thumbnailUrl, name, swiper) {
+    try {
+        const swiperUid = swiper?.swiperUid ?? null;
+        const { dataValues: data } = await ModelEmbed.create({ name, title, authorName, authorIconUrl, authorUrl, color, description, imageUrl, thumbnailUrl, swiperUid });
+        const author = { name: authorName, url: authorUrl, iconURL: authorIconUrl };
+        listEmbed.push(new Embed(color, author, title, description, imageUrl, thumbnailUrl, name, [], data.uid, [], swiperUid));
+        return true;
+    } catch (error) {
+        console.error(error);
+        return false;
+    }
+}
+
+/**
+ *
+ * @returns {Array<Embed>}
+ */
+function getListEmbed() {
+    return listEmbed;
+}
+
+/**
+ *
+ * @param {String} name
+ * @returns {Embed}
+ */
+function getEmbedByName(name) {
+    return listEmbed.find(embed => embed.name === name);
+}
+
+/**
+ *
+ * @param {Embed} embed
+ * @returns {Promise<boolean>}
+ */
+async function deleteEmbed(embed, client) {
+    try {
+        await ModelEmbed.destroy({ where: { name: embed.name } });
+        listEmbed = listEmbed.filter(e => e.name !== embed.name);
+
+        for(const msgSent of embed.embedsSent) {
+            const msg = await fetchMessageById(client, msgSent.channelId, msgSent.messageId);
+            await msg.delete();
+        }
+
+        // Select Menu part
+        const allSelectMenu = getListSelectMenu();
+        for(const sm of allSelectMenu) {
+            for(const option of sm.options) {
+                if(option.needToSend === embed.uid) {
+                    await sm.removeOption(option.label, client);
+                }
+            }
+        }
+
+        return true;
+    } catch (e) {
+        console.error(e);
+        return false;
+    }
+}
+
+async function initializeAllEmbeds() {
+    const [embedTemplate, embedTemplateField, embedInChannel] = await Promise.all([
+        ModelEmbed.findAll({ raw: true }),
+        ModelEmbedField.findAll({ raw: true }),
+        ModelEmbedInChannel.findAll({ raw: true }),
+    ]);
+
+    for(const template of embedTemplate) {
+        const author = { iconURL: template.authorIconUrl, url: template.authorUrl, name: template.authorName };
+
+        const fieldAssigned = embedTemplateField
+            .filter(field => field.linkedTo === template.uid)
+            .map(field => ({ value: field.value, name: field.name, inline: field.inline }));;
+
+        listEmbed.push(new Embed(template.color, author, template.title, template.description, template.imageUrl, template.thumbnailUrl, template.name, fieldAssigned, template.uid, [], template.swiperUid));
+        for(const msg of embedInChannel.filter(field => field.linkedTo === template.uid)) {
+            listEmbed.at(-1).addEmbedSent(msg.channelId, msg.messageId, msg.swiperType);
+        }
+    }
+}
+
+/**
+ *
+ * @param {String} uid
+ * @returns {Embed}
+ */
+function getEmbedByUid(uid) {
+    return listEmbed.find(embed => embed.uid === uid);
+}
 
 module.exports = {
     getEmbedByName,

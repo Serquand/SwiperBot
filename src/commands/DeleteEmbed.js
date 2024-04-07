@@ -1,5 +1,5 @@
 const { Client, CommandInteraction } = require("discord.js");
-const { getEmbedByName, deleteEmbed } = require("../services/Embed");
+const { getEmbedByName, deleteEmbed, getListEmbed } = require("../services/Embed");
 const { sendAutocomplete } = require("../tools/autocomplete");
 const { sendBadInteraction } = require("../tools/discord");
 
@@ -7,7 +7,6 @@ module.exports = {
     name: "delete_embed",
     description: "Supprime un Embed",
     group: "Embed",
-    isDisabled: true,
     options: [
         {
             name: 'embed_name',
@@ -15,7 +14,7 @@ module.exports = {
             required: true,
             description: "Le nom de l'Embed à supprimer",
             autocomplete: true,
-        },
+        }
     ],
     /**
      *
@@ -24,14 +23,16 @@ module.exports = {
      */
     runSlash: async (client, interaction) => {
         const embed = getEmbedByName(interaction.options.getString('embed_name'));
-        if(!embed) return sendBadInteraction(interaction, "L'Embed demandé n'existe pas !");
+        if(!embed) {
+            return interaction.reply({
+                content: "L'Embed demandé n'existe pas !",
+                ephemeral: true,
+            });
+        }
 
         try {
-            if(await deleteEmbed(embed, cascade)) {
-                return sendBadInteraction(interaction, 'L\'Embed a bien été supprimé');
-            } else {
-                return sendBadInteraction(interaction);
-            }
+            if(await deleteEmbed(embed, client)) return sendBadInteraction(interaction, 'L\'Embed a bien été supprimé');
+            else return sendBadInteraction(interaction);
         } catch(err) {
             console.error(err);
             return sendBadInteraction(interaction);

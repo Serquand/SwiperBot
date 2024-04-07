@@ -161,7 +161,7 @@ const Embed = (sequelize, Sequelize) => {
                 model: Swiper(sequelize, Sequelize),
                 key: "uid"
             },
-            onDelete: 'SET NULL',
+            onDelete: "SET NULL",
         },
 
         thumbnailUrl: {
@@ -220,6 +220,7 @@ const EmbedField = (sequelize, Sequelize) => {
                 model: Embed(sequelize, Sequelize),
                 key: "uid"
             },
+            onDelete: "CASCADE"
         }
     });
 }
@@ -254,7 +255,8 @@ const EmbedInChannel = (sequelize, Sequelize) => {
             references: {
                 model: Embed(sequelize, Sequelize),
                 key: 'uid'
-            }
+            },
+            onDelete: "CASCADE"
         },
 
         swiperType: {
@@ -322,7 +324,8 @@ const SelectMenuOption = (sequelize, Sequelize) => {
             references: {
                 model: Embed(sequelize, Sequelize),
                 key: 'uid'
-            }
+            },
+            onDelete: "CASCADE",
         },
 
         label: {

@@ -8,7 +8,6 @@ module.exports = {
     name: 'delete_select_menu',
     group: "Select Menu",
     description: "Supprime un Select Menu et tous ses enfants envoyés",
-    isDisabled: true,
     options: [
         {
             name: 'select_menu_name',
@@ -29,7 +28,7 @@ module.exports = {
         if(!selectMenu) return sendBadInteraction(interaction, "Le Select Menu que vous voulez supprimer n'existe pas !");
 
         try {
-            await SelectMenu.destroy({ where: { uid: selectMenu.selectMenuUid } });
+            await deleteAllSelectMenuByUid(selectMenu.selectMenuUid);
 
             // Fetch all the messages and delete those
             const listOfSMToDelete = getListOfSelectMenuInChannel().filter(sm => sm.linkedTo === selectMenu.selectMenuUid);
@@ -37,8 +36,6 @@ module.exports = {
                 const messageToDelete = await fetchMessageById(client, sm.channelId, sm.messageId);
                 await messageToDelete.delete();
             }
-
-            deleteAllSelectMenuByUid(selectMenu.selectMenuUid);
 
             return sendBadInteraction(interaction, "Le Select Menu a bien été supprimé");
         } catch (err) {

@@ -173,7 +173,7 @@ async function initializeSwiper() {
 /**
  *
  * @param {String} swiperName
- * @param {Client} clientId
+ * @param {Client} client
  * @returns
  */
 async function deleteSwiper(swiperName, client) {
@@ -183,6 +183,13 @@ async function deleteSwiper(swiperName, client) {
     try {
         await Promise.all([ SwiperInChannel.destroy({ where: { linkedTo: swiper.swiperUid } }), ModelSwiperImage.destroy({ where: { linkedTo: swiper.swiperUid } }) ]);
         await ModelSwiper.destroy({ where: { name: swiperName } });
+
+        const embedToUpdate = getListEmbed();
+        for(const embed of embedToUpdate) {
+            if(embed.hasSwiper && embed.swiperUid === swiper.swiperUid) {
+                embed.updateSwiper(null, client);
+            }
+        }
 
         allSwiperTemplate = allSwiperTemplate.filter(s => s.swiperName !== swiperName);
         allSwipers = allSwipers.filter(s => s.linkedTo !== swiper.swiperUid);

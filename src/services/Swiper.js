@@ -186,9 +186,10 @@ async function deleteSwiper(swiperName, client) {
 
         const embedToUpdate = getListEmbed();
         for(const embed of embedToUpdate) {
-            embed.updateSwiper(null);
+            if(embed.hasSwiper && embed.swiperUid === swiper.swiperUid) {
+                embed.updateSwiper(null, client);
+            }
         }
-        console.log(embedToUpdate);
 
         allSwiperTemplate = allSwiperTemplate.filter(s => s.swiperName !== swiperName);
         allSwipers = allSwipers.filter(s => s.linkedTo !== swiper.swiperUid);

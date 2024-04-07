@@ -19,7 +19,7 @@ module.exports = {
             required: true,
             type: "STRING",
             description: "Le nom de l'image à supprimer",
-            autocomplete: true,
+            autocomplete: true
         },
     ],
     /**

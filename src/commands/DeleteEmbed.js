@@ -31,7 +31,7 @@ module.exports = {
         }
 
         try {
-            if(await deleteEmbed(embed)) return sendBadInteraction(interaction, 'L\'Embed a bien été supprimé');
+            if(await deleteEmbed(embed, client)) return sendBadInteraction(interaction, 'L\'Embed a bien été supprimé');
             else return sendBadInteraction(interaction);
         } catch(err) {
             console.error(err);

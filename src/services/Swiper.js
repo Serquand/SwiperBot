@@ -191,8 +191,14 @@ async function deleteSwiper(swiperName, client) {
             }
         }
 
+        allSwiperToRemove = allSwipers.filter(s => s.linkedTo === swiper.swiperUid);
         allSwiperTemplate = allSwiperTemplate.filter(s => s.swiperName !== swiperName);
         allSwipers = allSwipers.filter(s => s.linkedTo !== swiper.swiperUid);
+
+        for(const swiper of allSwiperToRemove) {
+            const message = await fetchMessageById(client, swiper.channelId, swiper.messageId);
+            await message.delete();
+        }
 
         return true;
     } catch (e) {

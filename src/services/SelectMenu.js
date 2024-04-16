@@ -131,6 +131,8 @@ class SelectMenu {
         for(const msgSend of listOfSelectMenuSent) {
             const components = [new MessageActionRow().addComponents(this.generateSelectMenu(msgSend.customId))];
             const msg = await fetchMessageById(client, msgSend.channelId, msgSend.messageId);
+            if(msg === null) return;
+
             if(this.options.length === 0) {
                 await deleteAllSelectMenuByUid(this.selectMenuUid);
                 await msg.delete();

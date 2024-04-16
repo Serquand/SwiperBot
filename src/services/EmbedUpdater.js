@@ -3,7 +3,7 @@ const { getEmbedByUid } = require("./Embed");
 const { sendBadInteraction, getTextInputForActionUpdateModal, generateButtonToUpdateEmbed } = require("../tools/discord");
 const { getSwiperByName } = require("./Swiper");
 const { EmbedField, Embed: ModelEmbed } = require("../models");
-const { isValidColor } = require("../tools/utils");
+const { isValidColor, convertNumberToHexaColor } = require("../tools/utils");
 
 class EmbedUpdaterManager {
     constructor () {
@@ -64,9 +64,9 @@ class EmbedUpdaterManager {
                 authorName: messageEmbed.author?.name,
                 authorIconUrl: messageEmbed.author?.iconURL,
                 authorUrl: messageEmbed.author?.url,
-                color: messageEmbed.color,
+                color: messageEmbed.color ? convertNumberToHexaColor(messageEmbed.color) : null,
                 description: messageEmbed.description,
-                imageUrl: swiperUid === null ? messageEmbed.image.url : null,
+                imageUrl: swiperUid === null ? messageEmbed.image?.url : null,
                 swiperUid,
                 thumbnailUrl: messageEmbed.thumbnail?.url,
                 footerTitle: messageEmbed.footer?.text,
@@ -79,12 +79,11 @@ class EmbedUpdaterManager {
                 EmbedField.bulkCreate(newFields),
                 interaction.message.delete()
             ]);
+            return sendBadInteraction(interaction, "L'Embed a bien été modifié !");
         } catch (error) {
             console.error(error);
             return sendBadInteraction(interaction);
         }
-
-        return sendBadInteraction(interaction, "L'Embed a bien été modifié !");
     }
 
     /**
@@ -97,7 +96,6 @@ class EmbedUpdaterManager {
         const toUpdate = interaction.customId.split('+')[1];
         const uid = interaction.customId.split('+')[0];
         let content = interaction.message.content;
-
         if (!this.possibleAction.includes(toUpdate)) return sendBadInteraction(interaction);
 
         switch (toUpdate) {
@@ -169,10 +167,11 @@ class EmbedUpdaterManager {
                 embeds: [embed],
                 components: generateButtonToUpdateEmbed(uid),
             });
-            return interaction.deferUpdate();
         } catch (error) {
             return sendBadInteraction(interaction);
         }
+
+        return interaction.deferUpdate();
     }
 }
 

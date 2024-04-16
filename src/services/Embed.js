@@ -23,6 +23,12 @@ class EmbedInChannel {
         this.embed = getEmbedByUid(this.embedUid);
     }
 
+    updateSwiper(swiperUid, client) {
+        this.swiperUid = swiperUid;
+        this.swiperIndex = -1; // -1 because it'll be increased by 1 just after
+        this.refreshSwiper(client);
+    }
+
     /**
      *
      * @returns {String} The url of the next image
@@ -30,14 +36,15 @@ class EmbedInChannel {
     getNextImageUrl() {
         const { getSwiperByUid } = require('./Swiper');
         const swiper = getSwiperByUid(this.swiperUid);
+        if(!swiper) return;
         const maxLength = swiper.swiperImages.length;
         const nextIndex = this.swiperIndex + 1;
         this.swiperIndex = (maxLength === nextIndex) ? 0 : nextIndex % maxLength;
         return swiper.swiperImages[this.swiperIndex].imageUrl;
     }
 
-    async refreshSwiper(client) {
-        if (this.swiperType !== 'AUTO') return;
+    async refreshSwiper(client, force = false) {
+        if (this.swiperType !== 'AUTO' && !force) return;
         const newImageUrl = this.getNextImageUrl();
         const newEmbed = this.embed.generateEmbed().setImage(newImageUrl);
         const message = await fetchMessageById(client, this.channelId, this.messageId);
@@ -91,6 +98,9 @@ class Embed {
         this.getTheSwiper(newSwiperUid);
         this.imageUrl = null;
         this.synchronize(client);
+        for(let i = 0; i < this.embedsSent.length; i++) {
+            this.embedsSent[i].updateSwiper(swiperUid, client);
+        }
     }
 
     /**
@@ -114,7 +124,6 @@ class Embed {
     updateAll (embed, swiperUid, client) {
         this.color = embed.color;
         this.title = embed.title;
-        this.getTheSwiper(swiperUid);
         this.fields = embed.fields;
         this.imageUrl = swiperUid ? null : embed.image?.url ?? null;
         this.author = { iconURL: embed.author?.iconURL, name: embed.author?.name, url: embed.author?.url };
@@ -123,7 +132,14 @@ class Embed {
         this.footerIconUrl = embed.footer?.iconURL;
         this.footerTitle = embed.footer?.text;
         this.thumbnailUrl = embed.thumbnail?.url;
+        this.swiperUid = swiperUid;
+        this.getTheSwiper(swiperUid);
         this.synchronize(client);
+        if(this.hasSwiper) {
+            for(let i = 0; i < this.embedsSent.length; i++) {
+                this.embedsSent[i].updateSwiper(swiperUid, client);
+            }
+        }
     }
 
     getFieldByName(name) {
@@ -212,7 +228,9 @@ class Embed {
         const embed = this.generateEmbed();
         for(const msgSent of this.embedsSent) {
             const msg = await fetchMessageById(client, msgSent.channelId, msgSent.messageId);
-            await msg.edit({ embeds: [embed] });
+            if(msg !== null) {
+                await msg.edit({ embeds: [embed] });
+            }
         }
     }
 

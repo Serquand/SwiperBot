@@ -1,5 +1,9 @@
 version: '3.8'
 
+networks:
+  backend:
+    driver: bridge
+
 services:
   mysqldb:
     image: mysql
@@ -9,10 +13,14 @@ services:
       - MYSQL_DATABASE=$DB_NAME
       - MYSQL_ROOT_PASSWORD=QuwLE7fs6oBruU7GTHeCoS0uPaMdd9yX9wruDkb52QNY8CxDmz
     ports:
-      - "3007:3006"
+      - "4000:4000"
     volumes:
       - db:/var/lib/mysql
+    networks:
+      - backend
+
   app:
+    restart: always
     depends_on:
       - mysqldb
     build: .
@@ -22,12 +30,14 @@ services:
       - DB_USER=$DB_USER
       - DB_PASSWORD=$DB_PASSWORD
       - DB_NAME=$DB_NAME
-      - DB_PORT=3007
+      - DB_PORT=4000
       - BOT_TOKEN=$BOT_TOKEN
       - TZ=CET
       - NODE_ENV=prod
     stdin_open: true
     tty: true
+    networks:
+      - backend
 
 volumes:
   db:

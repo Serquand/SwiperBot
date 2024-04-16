@@ -3,7 +3,7 @@ module.exports = {
     USER: process.env.DB_USER,
 	PASSWORD: process.env.DB_PASSWORD,
     DB: process.env.DB_NAME,
-    PORT: process.env.NODE_ENV === 'dev' ? 3006 : process.env.DB_PORT,
+    PORT: process.env.NODE_ENV === 'dev' ? 3007 : process.env.DB_PORT,
     DIALECT: process.env.DB_DIALECT,
     pool: {
       	max: 5,

@@ -22,55 +22,55 @@ module.exports = {
             required: true,
             description: "Le titre de l'Embed à créer"
         },
-        {
-            name: "embed_description",
-            type: "STRING",
-            required: false,
-            description: "Le titre de l'Embed à créer"
-        },
-        {
-            name: "embed_swiper_name",
-            type: "STRING",
-            required: false,
-            description: "Le swiper à ajouter dans l'Embed",
-            autocomplete: true
-        },
-        {
-            name: "embed_image_url",
-            type: "STRING",
-            required: false,
-            description: "L'URL de l'image à ajouter dans l'Embed",
-        },
-        {
-            name: "embed_author_name",
-            type: "STRING",
-            required: false,
-            description: "Le nom de l'auteur de l'Embed"
-        },
-        {
-            name: "embed_author_icon_url",
-            type: "STRING",
-            description: "L'URL de l'icone l'auteur de l'Embed",
-            required: false,
-        },
-        {
-            name: "embed_author_url",
-            type: "STRING",
-            description: "L'URL de l'auteur de l'Embed",
-            required: false,
-        },
-        {
-            name: "embed_thumbnail_url",
-            type: "STRING",
-            description: "L'URL du thumbnail de l'Embed",
-            required: false,
-        },
-        {
-            name: 'color',
-            type: 'STRING',
-            description: "La couleur de l'Embed",
-            required: false,
-        }
+        // {
+        //     name: "embed_description",
+        //     type: "STRING",
+        //     required: false,
+        //     description: "Le titre de l'Embed à créer"
+        // },
+        // {
+        //     name: "embed_swiper_name",
+        //     type: "STRING",
+        //     required: false,
+        //     description: "Le swiper à ajouter dans l'Embed",
+        //     autocomplete: true
+        // },
+        // {
+        //     name: "embed_image_url",
+        //     type: "STRING",
+        //     required: false,
+        //     description: "L'URL de l'image à ajouter dans l'Embed",
+        // },
+        // {
+        //     name: "embed_author_name",
+        //     type: "STRING",
+        //     required: false,
+        //     description: "Le nom de l'auteur de l'Embed"
+        // },
+        // {
+        //     name: "embed_author_icon_url",
+        //     type: "STRING",
+        //     description: "L'URL de l'icone l'auteur de l'Embed",
+        //     required: false,
+        // },
+        // {
+        //     name: "embed_author_url",
+        //     type: "STRING",
+        //     description: "L'URL de l'auteur de l'Embed",
+        //     required: false,
+        // },
+        // {
+        //     name: "embed_thumbnail_url",
+        //     type: "STRING",
+        //     description: "L'URL du thumbnail de l'Embed",
+        //     required: false,
+        // },
+        // {
+        //     name: 'color',
+        //     type: 'STRING',
+        //     description: "La couleur de l'Embed",
+        //     required: false,
+        // }
     ],
     /**
      *

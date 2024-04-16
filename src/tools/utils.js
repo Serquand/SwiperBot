@@ -73,6 +73,16 @@ const initializeTurnOver = (client) => {
     }, 5_000);
 }
 
+
+/**
+ *
+ * @param {Number} number
+ * @returns {String}
+ */
+const convertNumberToHexaColor = (number) => {
+    return '#' + number.toString(16);
+};
+
 module.exports = {
     getAllFilesFromDirectory,
     getNextIndex,
@@ -80,4 +90,5 @@ module.exports = {
     isGoodEmoji,
     isValidColor,
     initializeTurnOver,
+    convertNumberToHexaColor
 }

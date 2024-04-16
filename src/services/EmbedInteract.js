@@ -1,5 +1,4 @@
 const { MessageComponentInteraction } = require("discord.js");
-const { getEmbedByUid } = require("./Embed");
 const { getNextIndex, getPreviousIndex } = require("../tools/utils");
 const { generateButtonToSwitchSwiperImage } = require("../tools/discord");
 
@@ -21,6 +20,7 @@ class EmbedInteractManager {
      * @param {MessageComponentInteraction} interaction
      */
     handleInteraction(interaction) {
+        const { getEmbedByUid } = require("./Embed");
         const uid = interaction.customId.split('+')[0], action = interaction.customId.split('+')[1];
         const info = this.allInteractions[uid], embed = getEmbedByUid(info?.embedId);
 

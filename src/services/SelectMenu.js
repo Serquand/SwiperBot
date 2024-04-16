@@ -1,7 +1,6 @@
 const { v4 } = require('uuid');
 const { SelectMenu: ModelSelectMenu, SelectMenuInChannel: ModelSelectMenuInChannel, SelectMenuOption: ModelSelectMenuOption } = require('../models');
 const { MessageSelectMenu, TextChannel, MessageActionRow, MessageComponentInteraction, Message, Client } = require('discord.js');
-const { getEmbedByUid } = require('./Embed');
 const { sendBadInteraction, fetchMessageById, generateButtonToSwitchSwiperImage } = require('../tools/discord');
 const { getEmbedInteractManager } = require('./EmbedInteract');
 
@@ -40,6 +39,7 @@ class SelectMenuInChannel {
     async respondToInteraction(interaction, client) {
         try {
             // Generate and send Embed
+            const { getEmbedByUid } = require('./Embed');
             const embed = getEmbedByUid(interaction.values[0]);
             if(!embed) return sendBadInteraction(interaction);
             interaction.reply({

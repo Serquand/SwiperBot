@@ -186,12 +186,12 @@ class Embed {
         }
     }
 
-    static isEmptyEmbed(fields, description, title) {
-        return (fields.length === 0 && !description && !title);
+    static isEmptyEmbed(fields, description, title, imageUrl, swiperUid) {
+        return (fields.length === 0 && !description && !title && !imageUrl && !swiperUid);
     }
 
     generateEmbed() {
-        if(Embed.isEmptyEmbed(this.fields, this.description, this.title)) return null;
+        if(Embed.isEmptyEmbed(this.fields, this.description, this.title, this.imageUrl, this.swiperUid)) return null;
 
         const embed = new MessageEmbed().setTitle(this.title ? this.title : '');
         if(this.fields && this.fields.length) embed.setFields(...this.fields);
@@ -231,10 +231,14 @@ class Embed {
      */
     async synchronize (client) {
         const embed = this.generateEmbed();
-        for(const msgSent of this.embedsSent) {
-            const msg = await fetchMessageById(client, msgSent.channelId, msgSent.messageId);
-            if(msg !== null) {
-                await msg.edit({ embeds: [embed] });
+        if (Embed.isEmptyEmbed(this.fields, this.description, this.title, this.imageUrl, this.swiperUid)) {
+            await deleteEmbed(this, client);
+        } else {
+            for(const msgSent of this.embedsSent) {
+                const msg = await fetchMessageById(client, msgSent.channelId, msgSent.messageId);
+                if(msg !== null) {
+                    await msg.edit({ embeds: [embed] });
+                }
             }
         }
     }

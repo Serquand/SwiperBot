@@ -185,10 +185,14 @@ class Embed {
         }
     }
 
-    generateEmbed() {
-        if(!this.title) return null;
+    static isEmptyEmbed(fields, description, title, swiperUid) {
+        return (fields.length === 0 && !description && !title && !swiperUid);
+    }
 
-        const embed = new MessageEmbed().setTitle(this.title);
+    generateEmbed() {
+        if(Embed.isEmptyEmbed(this.fields, this.description, this.title, this.swiperUid)) return null;
+
+        const embed = new MessageEmbed().setTitle(this.title ? this.title : '');
         if(this.fields && this.fields.length) embed.setFields(...this.fields);
         if(this.author && this.author.name) embed.setAuthor(this.author);
         if(this.color) embed.setColor(this.color);
@@ -339,4 +343,5 @@ module.exports = {
     getListEmbed,
     initializeAllEmbeds,
     getEmbedByUid,
+    Embed,
 }

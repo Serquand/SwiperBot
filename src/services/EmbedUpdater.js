@@ -4,6 +4,7 @@ const { sendBadInteraction, getTextInputForActionUpdateModal, generateButtonToUp
 const { getSwiperByName } = require("./Swiper");
 const { EmbedField, Embed: ModelEmbed } = require("../models");
 const { isValidColor, convertNumberToHexaColor } = require("../tools/utils");
+const { Embed } = require('../services/Embed');
 
 class EmbedUpdaterManager {
     constructor () {
@@ -45,7 +46,12 @@ class EmbedUpdaterManager {
 
         const swiperName = content.split("\nSwiper associé à l'Embed : ")[1];
         const swiperUid = swiperName === 'Aucun' ? null : getSwiperByName(swiperName)?.swiperUid;
-        if(swiperName !== 'Aucun' && !swiperUid) return sendBadInteraction(interaction);
+        if(swiperName !== 'Aucun' && !swiperUid) {
+            return sendBadInteraction(interaction, "Le Swiper n'a pas été trouvé !");
+        } else if(Embed.isEmptyEmbed(messageEmbed.fields, messageEmbed.description, messageEmbed.title, swiperUid)) {
+            return sendBadInteraction(interaction, "L'Embed ne peut pas être vide !");
+        }
+
 
         try {
             embed.updateAll(messageEmbed, swiperUid, interaction.client);

@@ -122,7 +122,7 @@ const Embed = (sequelize, Sequelize) => {
 
         title: {
             type: Sequelize.STRING,
-            required: true,
+            allowNull: true,
         },
 
         authorName: {

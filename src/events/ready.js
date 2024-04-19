@@ -13,6 +13,7 @@ module.exports = {
         const allGuilds = discordConfig.guilds;
         for(const guildId of allGuilds) {
             const guild = client.guilds.cache.get(guildId);
+            if(!guild) continue;
             guild.commands.set(client.commands.map((cmd) => cmd));
         }
 

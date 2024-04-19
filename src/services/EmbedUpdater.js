@@ -48,7 +48,7 @@ class EmbedUpdaterManager {
         const swiperUid = swiperName === 'Aucun' ? null : getSwiperByName(swiperName)?.swiperUid;
         if(swiperName !== 'Aucun' && !swiperUid) {
             return sendBadInteraction(interaction, "Le Swiper n'a pas été trouvé !");
-        } else if(Embed.isEmptyEmbed(messageEmbed.fields, messageEmbed.description, messageEmbed.title, messageEmbed.image.url, swiperUid)) {
+        } else if(Embed.isEmptyEmbed(messageEmbed.fields, messageEmbed.description, messageEmbed.title, messageEmbed.image?.url, swiperUid)) {
             return sendBadInteraction(interaction, "L'Embed ne peut pas être vide !");
         }
 

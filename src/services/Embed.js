@@ -44,6 +44,7 @@ class EmbedInChannel {
     }
 
     async refreshSwiper(client, force = false) {
+        if(!this.swiperUid) return;
         if (this.swiperType !== 'AUTO' && !force) return;
         const newImageUrl = this.getNextImageUrl();
         const newEmbed = this.embed.generateEmbed().setImage(newImageUrl);

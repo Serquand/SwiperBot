@@ -185,12 +185,12 @@ class Embed {
         }
     }
 
-    static isEmptyEmbed(fields, description, title, swiperUid) {
-        return (fields.length === 0 && !description && !title && !swiperUid);
+    static isEmptyEmbed(fields, description, title) {
+        return (fields.length === 0 && !description && !title);
     }
 
     generateEmbed() {
-        if(Embed.isEmptyEmbed(this.fields, this.description, this.title, this.swiperUid)) return null;
+        if(Embed.isEmptyEmbed(this.fields, this.description, this.title)) return null;
 
         const embed = new MessageEmbed().setTitle(this.title ? this.title : '');
         if(this.fields && this.fields.length) embed.setFields(...this.fields);

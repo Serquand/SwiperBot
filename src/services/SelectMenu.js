@@ -231,7 +231,7 @@ async function initializeSelectMenu() {
     const [allSelectMenus, allSelectMenuInChannels, allSelectMenuOptions] = await Promise.all([
         ModelSelectMenu.findAll({ raw: true }),
         ModelSelectMenuInChannel.findAll({ raw: true }),
-        ModelSelectMenuOption.findAll({ raw: true }),
+        ModelSelectMenuOption.findAll({ raw: true, order: [['createdAt', 'ASC']] }),
     ]);
     allSelectMenus.forEach(sm => {
         const listOptionAssigned = allSelectMenuOptions

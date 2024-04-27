@@ -54,7 +54,7 @@ class SelectMenuInChannel {
             const selectMenu = getSelectMenuByUid(this.linkedTo);
             const components = [new MessageActionRow().addComponents(selectMenu.generateSelectMenu(this.customId))];
             const message = await fetchMessageById(client, this.channelId, this.messageId);
-            message.edit({ components });
+            await message.edit({ components });
         }
     }
 }

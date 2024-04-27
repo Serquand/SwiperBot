@@ -14,7 +14,8 @@ function sendAutocomplete (interaction, listValues, key) {
             if(isValid) return { name: el, value: el };
             else return null;
         })
-        .filter(el => el !== null);
+        .filter(el => el !== null)
+        .slice(0, 15);
     interaction.respond(listToSend);
 }
 
